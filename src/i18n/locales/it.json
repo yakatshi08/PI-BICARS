@@ -1,0 +1,55 @@
+{
+  "app": {
+    "title": "Finance & Insurance Analytics Platform",
+    "subtitle": "Analisi dati intelligente per finanza e assicurazioni"
+  },
+  "nav": {
+    "dashboard": "Cruscotto",
+    "importData": "Importa dati",
+    "reports": "Rapporti",
+    "riskManagement": "Gestione del rischio",
+    "copilot": "Co-Pilot IA",
+    "analyticsML": "Analytics ML",
+    "banking": "Bancario",
+    "insurance": "Assicurazioni",
+    "bankingCore": "Banking Core",
+    "creditRisk": "Rischio di credito",
+    "liquidityALM": "Liquidità e ALM",
+    "marketRisk": "Rischio di mercato",
+    "insuranceCore": "Insurance Core",
+    "actuarial": "Attuariale",
+    "claimsUnderwriting": "Sinistri e Sottoscrizione"
+  },
+  "dashboard": {
+    "welcome": "Benvenuto nel tuo cruscotto",
+    "overview": "Panoramica",
+    "recentActivity": "Attività recente",
+    "quickStats": "Statistiche rapide",
+    "revenue": "Fatturato",
+    "transactions": "Transazioni",
+    "customers": "Clienti",
+    "riskScore": "Punteggio di rischio"
+  },
+  "common": {
+    "export": "Esporta",
+    "refresh": "Aggiorna",
+    "filter": "Filtra",
+    "search": "Cerca",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "delete": "Elimina",
+    "edit": "Modifica",
+    "view": "Visualizza",
+    "download": "Scarica",
+    "upload": "Carica",
+    "settings": "Impostazioni",
+    "help": "Aiuto",
+    "language": "Lingua",
+    "selectLanguage": "Seleziona lingua",
+    "loading": "Caricamento...",
+    "noData": "Nessun dato disponibile",
+    "error": "Errore",
+    "success": "Successo",
+    "warning": "Avviso"
+  }
+}

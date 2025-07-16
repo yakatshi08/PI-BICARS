@@ -1,0 +1,25 @@
+/* Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\index.css */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles pour Recharts en mode sombre */
+.recharts-wrapper .recharts-cartesian-grid-horizontal line,
+.recharts-wrapper .recharts-cartesian-grid-vertical line {
+  @apply dark:stroke-gray-700;
+}
+
+.recharts-wrapper .recharts-text {
+  @apply dark:fill-gray-300;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}

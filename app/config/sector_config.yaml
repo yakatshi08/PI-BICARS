@@ -1,0 +1,535 @@
+# app/config/sector_config.yaml
+# Configuration centralisée pour tous les secteurs
+
+sectors:
+  banque:
+    name: "Banque et Services Financiers"
+    description: "Configuration pour le secteur bancaire et financier"
+    
+    # Métriques clés du secteur
+    key_metrics:
+      - name: roi
+        display_name: "Return on Investment"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 20
+          good: 15
+          average: 10
+          poor: 5
+          
+      - name: cost_income_ratio
+        display_name: "Ratio Coûts/Revenus"
+        unit: "%"
+        direction: lower_is_better
+        benchmark_thresholds:
+          excellent: 40
+          good: 50
+          average: 60
+          poor: 70
+          
+      - name: npl_ratio
+        display_name: "Ratio de Créances Douteuses"
+        unit: "%"
+        direction: lower_is_better
+        benchmark_thresholds:
+          excellent: 1
+          good: 2
+          average: 3
+          poor: 5
+          
+      - name: tier1_ratio
+        display_name: "Ratio Tier 1"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 18
+          good: 14
+          average: 12
+          poor: 10
+          
+      - name: customer_acquisition_cost
+        display_name: "Coût d'Acquisition Client"
+        unit: "€"
+        direction: lower_is_better
+        
+    # Données sensibles spécifiques
+    sensitive_data_fields:
+      - field_pattern: "account.*number"
+        category: financial
+        sensitivity: highly_sensitive
+        anonymization_technique: tokenization
+        
+      - field_pattern: "iban|swift"
+        category: financial
+        sensitivity: highly_sensitive
+        anonymization_technique: encryption
+        
+      - field_pattern: "balance|solde"
+        category: financial
+        sensitivity: confidential
+        anonymization_technique: perturbation
+        
+      - field_pattern: "transaction.*amount"
+        category: financial
+        sensitivity: confidential
+        anonymization_technique: generalization
+        
+    # Exigences de conformité
+    compliance_requirements:
+      - framework: GDPR
+        requirements:
+          - data_retention_days: 365
+          - right_to_erasure: true
+          - data_portability: true
+          - consent_required: true
+          
+      - framework: PCI_DSS
+        requirements:
+          - encryption_at_rest: true
+          - encryption_in_transit: true
+          - access_logging: true
+          - tokenization_required: true
+          
+      - framework: BASEL_III
+        requirements:
+          - capital_adequacy_reporting: true
+          - risk_weighted_assets: true
+          - liquidity_coverage_ratio: true
+          
+    # Pipelines de données prédéfinis
+    data_pipelines:
+      - name: daily_transaction_pipeline
+        schedule: "0 2 * * *"  # 2h du matin
+        source_type: database
+        transformations:
+          - anonymize_pii
+          - calculate_risk_metrics
+          - aggregate_by_customer
+        destination_type: data_warehouse
+        
+      - name: monthly_reporting_pipeline
+        schedule: "0 3 1 * *"  # 1er du mois à 3h
+        source_type: data_warehouse
+        transformations:
+          - generate_regulatory_reports
+          - calculate_kpis
+          - create_dashboards
+        destination_type: reporting_system
+        
+    # Analyse de cohortes par défaut
+    cohort_analysis:
+      default_period: monthly
+      retention_metrics:
+        - customer_retention
+        - deposit_retention
+        - product_usage
+      value_metrics:
+        - customer_lifetime_value
+        - revenue_per_customer
+        - product_profitability
+        
+    # Alertes et seuils
+    alerts:
+      - metric: npl_ratio
+        threshold: 3
+        severity: warning
+        
+      - metric: tier1_ratio
+        threshold: 10
+        severity: critical
+        comparison: less_than
+        
+      - metric: daily_transactions_volume
+        threshold: 0.8
+        severity: warning
+        comparison: deviation_from_average
+
+  sante:
+    name: "Santé et Services Médicaux"
+    description: "Configuration pour le secteur de la santé"
+    
+    key_metrics:
+      - name: patient_satisfaction
+        display_name: "Satisfaction Patient"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 90
+          good: 80
+          average: 70
+          poor: 60
+          
+      - name: readmission_rate
+        display_name: "Taux de Réadmission"
+        unit: "%"
+        direction: lower_is_better
+        benchmark_thresholds:
+          excellent: 8
+          good: 12
+          average: 15
+          poor: 20
+          
+      - name: average_length_of_stay
+        display_name: "Durée Moyenne de Séjour"
+        unit: "jours"
+        direction: lower_is_better
+        benchmark_thresholds:
+          excellent: 3
+          good: 4
+          average: 5
+          poor: 7
+          
+      - name: bed_occupancy_rate
+        display_name: "Taux d'Occupation des Lits"
+        unit: "%"
+        direction: optimize  # Ni trop haut, ni trop bas
+        optimal_range: [75, 85]
+        
+      - name: clinical_quality_score
+        display_name: "Score de Qualité Clinique"
+        unit: "points"
+        direction: higher_is_better
+        
+    sensitive_data_fields:
+      - field_pattern: "patient.*id|mrn"
+        category: health
+        sensitivity: highly_sensitive
+        anonymization_technique: pseudonymization
+        
+      - field_pattern: "diagnosis|diagnostic"
+        category: health
+        sensitivity: highly_sensitive
+        anonymization_technique: generalization
+        
+      - field_pattern: "prescription|medication"
+        category: health
+        sensitivity: highly_sensitive
+        anonymization_technique: suppression
+        
+      - field_pattern: "medical.*history"
+        category: health
+        sensitivity: highly_sensitive
+        anonymization_technique: encryption
+        
+    compliance_requirements:
+      - framework: GDPR
+        requirements:
+          - data_retention_days: 730  # 2 ans
+          - explicit_consent: true
+          - data_minimization: true
+          - purpose_limitation: true
+          
+      - framework: HIPAA
+        requirements:
+          - phi_encryption: true
+          - access_controls: true
+          - audit_trails: true
+          - minimum_necessary: true
+          - de_identification_standard: safe_harbor
+          
+    data_pipelines:
+      - name: patient_intake_pipeline
+        schedule: "*/30 * * * *"  # Toutes les 30 minutes
+        source_type: hl7_interface
+        transformations:
+          - validate_patient_data
+          - de_identify_phi
+          - enrich_with_clinical_data
+        destination_type: ehr_system
+        
+      - name: clinical_analytics_pipeline
+        schedule: "0 1 * * *"  # 1h du matin
+        source_type: ehr_system
+        transformations:
+          - anonymize_patient_data
+          - calculate_clinical_metrics
+          - detect_care_gaps
+        destination_type: analytics_warehouse
+        
+    cohort_analysis:
+      default_period: weekly
+      clinical_cohorts:
+        - admission_diagnosis
+        - treatment_protocol
+        - risk_stratification
+      outcome_metrics:
+        - clinical_outcomes
+        - patient_reported_outcomes
+        - cost_effectiveness
+        
+    alerts:
+      - metric: readmission_rate
+        threshold: 15
+        severity: warning
+        window: 30_days
+        
+      - metric: patient_safety_events
+        threshold: 1
+        severity: critical
+        action: immediate_notification
+
+  retail:
+    name: "Commerce et Distribution"
+    description: "Configuration pour le secteur retail"
+    
+    key_metrics:
+      - name: conversion_rate
+        display_name: "Taux de Conversion"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 5
+          good: 3
+          average: 2
+          poor: 1
+          
+      - name: average_order_value
+        display_name: "Panier Moyen"
+        unit: "€"
+        direction: higher_is_better
+        
+      - name: customer_retention_rate
+        display_name: "Taux de Rétention Client"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 60
+          good: 40
+          average: 30
+          poor: 20
+          
+      - name: inventory_turnover
+        display_name: "Rotation des Stocks"
+        unit: "x/an"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 12
+          good: 8
+          average: 6
+          poor: 4
+          
+      - name: gross_margin
+        display_name: "Marge Brute"
+        unit: "%"
+        direction: higher_is_better
+        
+    sensitive_data_fields:
+      - field_pattern: "customer.*email"
+        category: contact
+        sensitivity: sensitive
+        anonymization_technique: masking
+        
+      - field_pattern: "credit.*card|payment.*method"
+        category: financial
+        sensitivity: highly_sensitive
+        anonymization_technique: tokenization
+        
+      - field_pattern: "shipping.*address|billing.*address"
+        category: location
+        sensitivity: sensitive
+        anonymization_technique: generalization
+        
+    compliance_requirements:
+      - framework: GDPR
+        requirements:
+          - cookie_consent: true
+          - marketing_opt_in: true
+          - data_retention_days: 365
+          
+      - framework: PCI_DSS
+        requirements:
+          - payment_tokenization: true
+          - secure_transmission: true
+          
+    data_pipelines:
+      - name: real_time_sales_pipeline
+        schedule: "streaming"
+        source_type: pos_system
+        transformations:
+          - validate_transaction
+          - enrich_customer_data
+          - calculate_loyalty_points
+        destination_type: crm_system
+        
+      - name: inventory_optimization_pipeline
+        schedule: "0 */4 * * *"  # Toutes les 4 heures
+        source_type: inventory_system
+        transformations:
+          - analyze_stock_levels
+          - predict_demand
+          - generate_reorder_suggestions
+        destination_type: planning_system
+        
+    cohort_analysis:
+      default_period: weekly
+      customer_segments:
+        - acquisition_channel
+        - customer_tier
+        - geographic_region
+      behavioral_metrics:
+        - purchase_frequency
+        - basket_composition
+        - channel_preference
+        
+    alerts:
+      - metric: stock_out_risk
+        threshold: 0.8
+        severity: warning
+        
+      - metric: conversion_rate
+        threshold: -20  # Baisse de 20%
+        severity: critical
+        comparison: percentage_change
+
+  tech:
+    name: "Technologie et SaaS"
+    description: "Configuration pour le secteur tech/SaaS"
+    
+    key_metrics:
+      - name: monthly_recurring_revenue
+        display_name: "MRR"
+        unit: "€"
+        direction: higher_is_better
+        
+      - name: churn_rate
+        display_name: "Taux de Churn"
+        unit: "%"
+        direction: lower_is_better
+        benchmark_thresholds:
+          excellent: 3
+          good: 5
+          average: 7
+          poor: 10
+          
+      - name: ltv_cac_ratio
+        display_name: "Ratio LTV/CAC"
+        unit: "x"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 4
+          good: 3
+          average: 2
+          poor: 1
+          
+      - name: net_revenue_retention
+        display_name: "NRR"
+        unit: "%"
+        direction: higher_is_better
+        benchmark_thresholds:
+          excellent: 120
+          good: 110
+          average: 100
+          poor: 90
+          
+      - name: daily_active_users
+        display_name: "DAU"
+        unit: "users"
+        direction: higher_is_better
+        
+    sensitive_data_fields:
+      - field_pattern: "api.*key|token|secret"
+        category: authentication
+        sensitivity: highly_sensitive
+        anonymization_technique: suppression
+        
+      - field_pattern: "user.*email|account.*email"
+        category: contact
+        sensitivity: sensitive
+        anonymization_technique: pseudonymization
+        
+      - field_pattern: "ip.*address"
+        category: technical
+        sensitivity: sensitive
+        anonymization_technique: masking
+        
+    compliance_requirements:
+      - framework: GDPR
+        requirements:
+          - data_portability: true
+          - api_data_export: true
+          - deletion_automation: true
+          
+      - framework: SOC2
+        requirements:
+          - security_controls: true
+          - availability_sla: 99.9
+          - processing_integrity: true
+          
+    data_pipelines:
+      - name: user_activity_pipeline
+        schedule: "*/5 * * * *"  # Toutes les 5 minutes
+        source_type: application_logs
+        transformations:
+          - parse_user_events
+          - calculate_engagement_metrics
+          - detect_anomalies
+        destination_type: analytics_database
+        
+      - name: revenue_analytics_pipeline
+        schedule: "0 0 * * *"  # Minuit
+        source_type: billing_system
+        transformations:
+          - calculate_mrr_changes
+          - segment_revenue
+          - forecast_growth
+        destination_type: financial_reporting
+        
+    cohort_analysis:
+      default_period: monthly
+      user_cohorts:
+        - signup_source
+        - pricing_tier
+        - feature_adoption
+      success_metrics:
+        - activation_rate
+        - feature_usage
+        - expansion_revenue
+        
+    alerts:
+      - metric: system_availability
+        threshold: 99.5
+        severity: critical
+        comparison: less_than
+        
+      - metric: api_response_time
+        threshold: 500  # ms
+        severity: warning
+        comparison: greater_than
+
+# Configuration globale
+global_settings:
+  # Paramètres d'anonymisation par défaut
+  anonymization:
+    default_k_anonymity: 5
+    default_l_diversity: 3
+    salt_rotation_days: 90
+    
+  # Paramètres de pipeline
+  pipeline:
+    max_parallel_workers: 4
+    default_batch_size: 10000
+    checkpoint_interval_minutes: 30
+    retry_attempts: 3
+    
+  # Paramètres de qualité des données
+  data_quality:
+    missing_value_threshold: 0.1  # 10%
+    duplicate_threshold: 0.05     # 5%
+    outlier_detection_method: iqr
+    
+  # Paramètres de monitoring
+  monitoring:
+    metrics_retention_days: 90
+    alert_cooldown_minutes: 60
+    notification_channels:
+      - email
+      - slack
+      - webhook
+      
+  # Paramètres de sécurité
+  security:
+    encryption_algorithm: AES-256
+    key_rotation_days: 30
+    audit_log_retention_days: 365
+    mfa_required_for_sensitive_ops: true

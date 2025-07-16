@@ -1,0 +1,74 @@
+// Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\App.tsx
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Imports nommés (avec accolades)
+import { AnalyticsMLModule } from './components/AnalyticsMLModule';
+import { BankingCore } from './components/BankingCore';
+import { CoPilotIA } from './components/CoPilotIA';
+import { Dashboard } from './components/Dashboard';
+import { DataImport } from './components/DataImport';
+import { Header } from './components/Header';
+import { InsuranceCore } from './components/InsuranceCore';
+
+// Imports default (sans accolades)
+import Analyses from './components/Analyses';
+import CreditRisk from './components/CreditRisk';
+import LiquidityALM from './components/LiquidityALM';
+import MarketRisk from './components/MarketRisk';
+import Parameters from './components/Parameters';
+import Predictions from './components/Predictions';
+import Reports from './components/Reports';
+
+// ✅ AJOUT des nouveaux imports :
+import ActuarialAnalytics from './components/ActuarialAnalytics';
+import ClaimsUnderwriting from './components/ClaimsUnderwriting';
+
+function App() {
+  return (
+    <Router>
+      <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
+        {/* Header fixe en haut */}
+        <Header />
+        
+        {/* Contenu principal */}
+        <main className="flex-1 w-full">
+          <Routes>
+            {/* Route par défaut */}
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            
+            {/* Routes Banking */}
+            <Route path="/banking" element={<BankingCore />} />
+            <Route path="/banking/credit-risk" element={<CreditRisk />} />
+            <Route path="/banking/liquidity-alm" element={<LiquidityALM />} />
+            <Route path="/banking/market-risk" element={<MarketRisk />} />
+            <Route path="/banking/risk-analysis" element={<BankingCore />} />
+            
+            {/* Routes Insurance */}
+            <Route path="/insurance" element={<InsuranceCore />} />
+            <Route path="/insurance/claims" element={<ClaimsUnderwriting />} />
+            <Route path="/insurance/actuarial" element={<ActuarialAnalytics />} />
+            
+            {/* Routes Analytics & IA */}
+            <Route path="/analytics" element={<Analyses />} />
+            <Route path="/analytics-ml" element={<AnalyticsMLModule />} />
+            <Route path="/predictions" element={<Predictions />} />
+            <Route path="/copilot" element={<CoPilotIA />} />
+            
+            {/* Routes Data & Reports */}
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/data-import" element={<DataImport />} />
+            <Route path="/parameters" element={<Parameters />} />
+            
+            {/* Route 404 */}
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          </Routes>
+        </main>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
