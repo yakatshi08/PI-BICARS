@@ -1,0 +1,245 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "export": "Exporter",
+    "import": "Importer",
+    "refresh": "Actualiser",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès",
+    "warning": "Attention",
+    "info": "Information"
+  },
+  "header": {
+    "title": "PI BICARS",
+    "subtitle": "Piattaforma di Intelligence Finanziaria e Assicurativa",
+    "selectLanguage": "Sélectionner la langue",
+    "sectors": {
+      "all": "Tutti",
+      "banking": "Banca",
+      "insurance": "Assicurazione"
+    }
+  },
+  "navigation": {
+    "home": "Accueil",
+    "dashboard": "Cruscotto",
+    "import": "Importa Dati",
+    "banking": "Modulo Bancario",
+    "creditRisk": "Rischio di Credito",
+    "liquidityALM": "Liquidité & ALM",
+    "marketRisk": "Risque de Marché",
+    "insurance": "Modulo Assicurativo",
+    "actuarial": "Analyse Actuarielle",
+    "claims": "Sinistres & Souscription",
+    "copilot": "Co-Pilot IA",
+    "analytics": "Analytics ML",
+    "riskManagement": "Gestione Rischi",
+    "reports": "Rapporti",
+    "settings": "Impostazioni"
+  },
+  "claims": {
+    "title": "Claims & Underwriting Intelligence",
+    "subtitle": "Détection de fraude, prédiction des coûts et optimisation du pricing",
+    "metrics": {
+      "fraudRate": {
+        "title": "Taux de Fraude Détecté",
+        "value": "{{value}}%",
+        "description": "{{count}} sinistres suspects sur {{total}}"
+      },
+      "savings": {
+        "title": "Économies Réalisées",
+        "value": "{{value}} €",
+        "description": "Fraudes évitées ce mois"
+      },
+      "mlAccuracy": {
+        "title": "Précision ML",
+        "value": "{{value}}%",
+        "description": "Accuracy du modèle de détection"
+      },
+      "processingTime": {
+        "title": "Temps Traitement",
+        "value": "{{value}}h",
+        "description": "Temps moyen par dossier"
+      }
+    },
+    "tabs": {
+      "fraudDetection": "Détection de Fraude",
+      "costPrediction": "Prédiction des Coûts",
+      "pricingOptimization": "Optimisation Pricing",
+      "adverseSelection": "Sélection Adverse"
+    },
+    "actions": {
+      "refresh": "Actualiser",
+      "exportReport": "Export Rapport"
+    },
+    "timeRange": {
+      "lastDays": "{{count}} derniers jours",
+      "lastMonth": "Dernier mois",
+      "lastQuarter": "Dernier trimestre",
+      "lastYear": "Dernière année"
+    }
+  },
+  "actuarial": {
+    "title": "Module Actuariel",
+    "subtitle": "Analyse des réserves techniques et projections",
+    "chainLadder": {
+      "title": "Chain Ladder",
+      "centralEstimate": "Estimation centrale",
+      "interval95": "Intervalle 95%",
+      "variationCoef": "Coefficient de variation"
+    },
+    "bornhuetterFerguson": {
+      "title": "Bornhuetter-Ferguson",
+      "ultimateLoss": "Perte ultime",
+      "lossRatio": "Ratio de sinistralité",
+      "developmentFactor": "Facteur de développement"
+    },
+    "capeCod": {
+      "title": "Cape Cod",
+      "aprioriLoss": "Perte a priori",
+      "credibility": "Crédibilité",
+      "finalEstimate": "Estimation finale"
+    },
+    "triangles": {
+      "development": "Triangles de développement",
+      "cumulative": "Cumulatif",
+      "incremental": "Incrémental",
+      "factors": "Facteurs"
+    }
+  },
+  "banking": {
+    "title": "Module Bancaire",
+    "metrics": {
+      "nii": "Marge d'intérêt nette (NII)",
+      "lcr": "Ratio de liquidité (LCR)",
+      "nsfr": "Ratio de financement stable (NSFR)",
+      "cet1": "Ratio CET1",
+      "nplRatio": "Ratio NPL",
+      "roe": "ROE",
+      "roa": "ROA"
+    },
+    "dashboards": {
+      "executive": "Dashboard Exécutif",
+      "risk": "Dashboard Risque",
+      "liquidity": "Dashboard Liquidité",
+      "regulatory": "Dashboard Réglementaire"
+    }
+  },
+  "insurance": {
+    "title": "Module Assurance",
+    "metrics": {
+      "combinedRatio": "Ratio combiné",
+      "lossRatio": "Ratio de sinistralité",
+      "expenseRatio": "Ratio de frais",
+      "roe": "ROE assurance",
+      "scr": "SCR",
+      "mcr": "MCR",
+      "ownFunds": "Fonds propres",
+      "riskMargin": "Marge de risque"
+    },
+    "solvency": {
+      "title": "Solvabilité II",
+      "modules": {
+        "market": "Risque de marché",
+        "life": "Risque vie",
+        "nonLife": "Risque non-vie",
+        "health": "Risque santé",
+        "default": "Risque de défaut",
+        "operational": "Risque opérationnel"
+      }
+    }
+  },
+  "copilot": {
+    "title": "Co-Pilot IA",
+    "placeholder": "Posez votre question en langage naturel...",
+    "examples": {
+      "banking": "Calcule mon ratio CET1",
+      "insurance": "Montre l'évolution de mon ratio de sinistralité",
+      "risk": "Crée un stress test Bâle III",
+      "report": "Prépare le QRT Solvency II"
+    }
+  },
+  "import": {
+    "title": "Import de Données",
+    "subtitle": "Assistant intelligent d'import multi-format",
+    "formats": {
+      "excel": "Excel/CSV",
+      "pdf": "PDF (OCR)",
+      "json": "JSON/XML",
+      "api": "API",
+      "dragDrop": "Glisser-Déposer"
+    },
+    "detection": {
+      "analyzing": "Analyse en cours...",
+      "detected": "Type détecté : {{type}}",
+      "configuring": "Configuration automatique..."
+    }
+  },
+  "reports": {
+    "title": "Rapports",
+    "types": {
+      "regulatory": "Rapports Réglementaires",
+      "executive": "Rapports Exécutifs",
+      "technical": "Rapports Techniques",
+      "custom": "Rapports Personnalisés"
+    },
+    "formats": {
+      "pdf": "PDF",
+      "excel": "Excel",
+      "word": "Word",
+      "powerpoint": "PowerPoint"
+    },
+    "regulatory": {
+      "corep": "COREP",
+      "finrep": "FINREP",
+      "basel": "Bâle III",
+      "ifrs9": "IFRS 9",
+      "solvency": "Solvency II QRT"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "sections": {
+      "general": "Général",
+      "security": "Sécurité",
+      "notifications": "Notifications",
+      "integrations": "Intégrations",
+      "compliance": "Conformité"
+    },
+    "language": {
+      "title": "Langue",
+      "description": "Sélectionnez votre langue préférée"
+    },
+    "theme": {
+      "title": "Thème",
+      "light": "Clair",
+      "dark": "Sombre",
+      "auto": "Automatique"
+    }
+  },
+  "dates": {
+    "today": "Aujourd'hui",
+    "yesterday": "Hier",
+    "thisWeek": "Cette semaine",
+    "lastWeek": "Semaine dernière",
+    "thisMonth": "Ce mois",
+    "lastMonth": "Mois dernier",
+    "thisQuarter": "Ce trimestre",
+    "lastQuarter": "Trimestre dernier",
+    "thisYear": "Cette année",
+    "lastYear": "Année dernière"
+  },
+  "errors": {
+    "generic": "Une erreur s'est produite",
+    "network": "Erreur de connexion",
+    "unauthorized": "Non autorisé",
+    "notFound": "Page non trouvée",
+    "validation": "Erreur de validation",
+    "serverError": "Erreur serveur"
+  }
+}

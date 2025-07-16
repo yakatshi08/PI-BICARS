@@ -1,0 +1,245 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "search": "Search",
+    "filter": "Filter",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "header": {
+    "title": "PI BICARS",
+    "subtitle": "Financial and Insurance Intelligence Platform",
+    "selectLanguage": "Select language",
+    "sectors": {
+      "all": "All",
+      "banking": "Banking",
+      "insurance": "Insurance"
+    }
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "import": "Import Data",
+    "banking": "Banking Module",
+    "creditRisk": "Credit Risk",
+    "liquidityALM": "Liquidity & ALM",
+    "marketRisk": "Market Risk",
+    "insurance": "Insurance Module",
+    "actuarial": "Actuarial Analytics",
+    "claims": "Claims & Underwriting",
+    "copilot": "AI Co-Pilot",
+    "analytics": "ML Analytics",
+    "riskManagement": "Risk Management",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "claims": {
+    "title": "Claims & Underwriting Intelligence",
+    "subtitle": "Fraud detection, cost prediction and pricing optimization",
+    "metrics": {
+      "fraudRate": {
+        "title": "Fraud Detection Rate",
+        "value": "{{value}}%",
+        "description": "{{count}} suspicious claims out of {{total}}"
+      },
+      "savings": {
+        "title": "Realized Savings",
+        "value": "{{value}} €",
+        "description": "Fraud prevented this month"
+      },
+      "mlAccuracy": {
+        "title": "ML Accuracy",
+        "value": "{{value}}%",
+        "description": "Detection model accuracy"
+      },
+      "processingTime": {
+        "title": "Processing Time",
+        "value": "{{value}}h",
+        "description": "Average time per file"
+      }
+    },
+    "tabs": {
+      "fraudDetection": "Fraud Detection",
+      "costPrediction": "Cost Prediction",
+      "pricingOptimization": "Pricing Optimization",
+      "adverseSelection": "Adverse Selection"
+    },
+    "actions": {
+      "refresh": "Refresh",
+      "exportReport": "Export Report"
+    },
+    "timeRange": {
+      "lastDays": "Last {{count}} days",
+      "lastMonth": "Last month",
+      "lastQuarter": "Last quarter",
+      "lastYear": "Last year"
+    }
+  },
+  "actuarial": {
+    "title": "Actuarial Module",
+    "subtitle": "Technical reserves analysis and projections",
+    "chainLadder": {
+      "title": "Chain Ladder",
+      "centralEstimate": "Central estimate",
+      "interval95": "95% interval",
+      "variationCoef": "Coefficient of variation"
+    },
+    "bornhuetterFerguson": {
+      "title": "Bornhuetter-Ferguson",
+      "ultimateLoss": "Ultimate loss",
+      "lossRatio": "Loss ratio",
+      "developmentFactor": "Development factor"
+    },
+    "capeCod": {
+      "title": "Cape Cod",
+      "aprioriLoss": "A priori loss",
+      "credibility": "Credibility",
+      "finalEstimate": "Final estimate"
+    },
+    "triangles": {
+      "development": "Development triangles",
+      "cumulative": "Cumulative",
+      "incremental": "Incremental",
+      "factors": "Factors"
+    }
+  },
+  "banking": {
+    "title": "Banking Module",
+    "metrics": {
+      "nii": "Net Interest Income (NII)",
+      "lcr": "Liquidity Coverage Ratio (LCR)",
+      "nsfr": "Net Stable Funding Ratio (NSFR)",
+      "cet1": "CET1 Ratio",
+      "nplRatio": "NPL Ratio",
+      "roe": "ROE",
+      "roa": "ROA"
+    },
+    "dashboards": {
+      "executive": "Executive Dashboard",
+      "risk": "Risk Dashboard",
+      "liquidity": "Liquidity Dashboard",
+      "regulatory": "Regulatory Dashboard"
+    }
+  },
+  "insurance": {
+    "title": "Insurance Module",
+    "metrics": {
+      "combinedRatio": "Combined Ratio",
+      "lossRatio": "Loss Ratio",
+      "expenseRatio": "Expense Ratio",
+      "roe": "Insurance ROE",
+      "scr": "SCR",
+      "mcr": "MCR",
+      "ownFunds": "Own Funds",
+      "riskMargin": "Risk Margin"
+    },
+    "solvency": {
+      "title": "Solvency II",
+      "modules": {
+        "market": "Market Risk",
+        "life": "Life Risk",
+        "nonLife": "Non-Life Risk",
+        "health": "Health Risk",
+        "default": "Default Risk",
+        "operational": "Operational Risk"
+      }
+    }
+  },
+  "copilot": {
+    "title": "AI Co-Pilot",
+    "placeholder": "Ask your question in natural language...",
+    "examples": {
+      "banking": "Calculate my CET1 ratio",
+      "insurance": "Show the evolution of my loss ratio",
+      "risk": "Create a Basel III stress test",
+      "report": "Prepare the Solvency II QRT"
+    }
+  },
+  "import": {
+    "title": "Data Import",
+    "subtitle": "Intelligent multi-format import assistant",
+    "formats": {
+      "excel": "Excel/CSV",
+      "pdf": "PDF (OCR)",
+      "json": "JSON/XML",
+      "api": "API",
+      "dragDrop": "Drag & Drop"
+    },
+    "detection": {
+      "analyzing": "Analyzing...",
+      "detected": "Detected type: {{type}}",
+      "configuring": "Automatic configuration..."
+    }
+  },
+  "reports": {
+    "title": "Reports",
+    "types": {
+      "regulatory": "Regulatory Reports",
+      "executive": "Executive Reports",
+      "technical": "Technical Reports",
+      "custom": "Custom Reports"
+    },
+    "formats": {
+      "pdf": "PDF",
+      "excel": "Excel",
+      "word": "Word",
+      "powerpoint": "PowerPoint"
+    },
+    "regulatory": {
+      "corep": "COREP",
+      "finrep": "FINREP",
+      "basel": "Basel III",
+      "ifrs9": "IFRS 9",
+      "solvency": "Solvency II QRT"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "general": "General",
+      "security": "Security",
+      "notifications": "Notifications",
+      "integrations": "Integrations",
+      "compliance": "Compliance"
+    },
+    "language": {
+      "title": "Language",
+      "description": "Select your preferred language"
+    },
+    "theme": {
+      "title": "Theme",
+      "light": "Light",
+      "dark": "Dark",
+      "auto": "Automatic"
+    }
+  },
+  "dates": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This week",
+    "lastWeek": "Last week",
+    "thisMonth": "This month",
+    "lastMonth": "Last month",
+    "thisQuarter": "This quarter",
+    "lastQuarter": "Last quarter",
+    "thisYear": "This year",
+    "lastYear": "Last year"
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "network": "Connection error",
+    "unauthorized": "Unauthorized",
+    "notFound": "Page not found",
+    "validation": "Validation error",
+    "serverError": "Server error"
+  }
+}
