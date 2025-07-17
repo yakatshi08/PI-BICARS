@@ -1,9 +1,20 @@
+<<<<<<< HEAD
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useStore } from './store'; // Ajouté pour InsurancePlaceholder
 
 // Imports nommés (avec accolades)
 import { AnalyticsMLModule } from './components/AnalyticsMLModule';
+=======
+// Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\App.tsx
+
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Imports nommés (avec accolades)
+import { AnalyticsMLModule } from './components/AnalyticsMLModule';
+import { BankingCore } from './components/BankingCore';
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 import { CoPilotIA } from './components/CoPilotIA';
 import { Dashboard } from './components/Dashboard';
 import { DataImport } from './components/DataImport';
@@ -23,6 +34,7 @@ import Reports from './components/Reports';
 import ActuarialAnalytics from './components/ActuarialAnalytics';
 import ClaimsUnderwriting from './components/ClaimsUnderwriting';
 
+<<<<<<< HEAD
 // ✅ CORRECTION : Nouvel import pour BankingDashboard
 import BankingDashboard from './pages/banking/BankingDashboard';
 
@@ -47,6 +59,8 @@ const InsurancePlaceholder = ({ title }: { title: string }) => {
   );
 };
 
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 function App() {
   return (
     <Router>
@@ -61,6 +75,7 @@ function App() {
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Dashboard />} />
             
+<<<<<<< HEAD
             {/* ✅ CORRECTION : Routes Banking */}
             <Route path="/banking" element={<BankingDashboard />} />
             <Route path="/banking/risk-analysis" element={<BankingDashboard />} />
@@ -69,12 +84,21 @@ function App() {
             <Route path="/banking/credit-risk" element={<CreditRisk />} />
             <Route path="/banking/liquidity-alm" element={<LiquidityALM />} />
             <Route path="/banking/market-risk" element={<MarketRisk />} />
+=======
+            {/* Routes Banking */}
+            <Route path="/banking" element={<BankingCore />} />
+            <Route path="/banking/credit-risk" element={<CreditRisk />} />
+            <Route path="/banking/liquidity-alm" element={<LiquidityALM />} />
+            <Route path="/banking/market-risk" element={<MarketRisk />} />
+            <Route path="/banking/risk-analysis" element={<BankingCore />} />
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
             
             {/* Routes Insurance */}
             <Route path="/insurance" element={<InsuranceCore />} />
             <Route path="/insurance/claims" element={<ClaimsUnderwriting />} />
             <Route path="/insurance/actuarial" element={<ActuarialAnalytics />} />
             
+<<<<<<< HEAD
             {/* ✅ AJOUT : Routes Insurance détaillées */}
             <Route path="/insurance/scr-details" element={<InsurancePlaceholder title="SCR Coverage - Détails" />} />
             <Route path="/insurance/combined-ratio" element={<InsurancePlaceholder title="Combined Ratio - Analyse" />} />
@@ -83,6 +107,8 @@ function App() {
             <Route path="/insurance/actuarial-analysis" element={<ActuarialAnalytics />} />
             <Route path="/insurance/claims-management" element={<ClaimsUnderwriting />} />
             
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
             {/* Routes Analytics & IA */}
             <Route path="/analytics" element={<Analyses />} />
             <Route path="/analytics-ml" element={<AnalyticsMLModule />} />
@@ -103,4 +129,8 @@ function App() {
   );
 }
 
+<<<<<<< HEAD
 export default App;
+=======
+export default App;
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2

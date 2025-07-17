@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { 
   Upload, FileSpreadsheet, FileText, FileJson, 
   Database, Cloud, Check, AlertCircle, Loader,
+<<<<<<< HEAD
   Sparkles, FileCheck, TrendingUp, CreditCard, Shield,
   CheckCircle, Eye, Download, Trash2, ArrowLeft, BarChart3
 } from 'lucide-react';
@@ -23,11 +24,23 @@ interface ValidationError {
   column: string;
   message: string;
 }
+=======
+  Sparkles, FileCheck, TrendingUp, CreditCard, Shield
+} from 'lucide-react';
+import { useStore } from '../store';
+import { useTranslation } from '../hooks/useTranslation';
+import Papa from 'papaparse';
+import * as XLSX from 'xlsx';
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 
 const cn = (...classes: (string | boolean | undefined)[]) => {
   return classes.filter(Boolean).join(' ');
 };
 
+<<<<<<< HEAD
+=======
+// Détection automatique du type de données (simplifiée)
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 const detectDataType = async (file: File): Promise<'banking' | 'insurance' | 'generic'> => {
   const text = await file.text();
   const lowerContent = text.toLowerCase();
@@ -40,10 +53,18 @@ const detectDataType = async (file: File): Promise<'banking' | 'insurance' | 'ge
   return 'generic';
 };
 
+<<<<<<< HEAD
 const getSuggestedKPIs = (dataType: string): string[] => {
   switch (dataType) {
     case 'banking':
       return ['Taux d\'intérêt', 'Montant total prêté', 'Durée moyenne', 'Ratio de défaut'];
+=======
+// Suggestion de KPIs selon le type détecté
+const getSuggestedKPIs = (dataType: string): string[] => {
+  switch (dataType) {
+    case 'banking':
+      return ['Taux d’intérêt', 'Montant total prêté', 'Durée moyenne', 'Ratio de défaut'];
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
     case 'insurance':
       return ['Montant total des primes', 'Ratio sinistralité', 'Nombre de réclamations'];
     default:
@@ -58,6 +79,7 @@ export const DataImport: React.FC = () => {
   const { t } = useTranslation();
 
   const [isDragging, setIsDragging] = useState(false);
+<<<<<<< HEAD
   const [isLoading, setIsLoading] = useState(false);
   const [previewData, setPreviewData] = useState<PreviewData | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
@@ -75,12 +97,19 @@ export const DataImport: React.FC = () => {
   const [analysisResults, setAnalysisResults] = useState<any>(null);
   const [dataValidated, setDataValidated] = useState(false);
 
+=======
+  const [file, setFile] = useState<File | null>(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
   const [detectedSector, setDetectedSector] = useState<'banking' | 'insurance' | null>(null);
   const [recommendedKPIs, setRecommendedKPIs] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [importedRowCount, setImportedRowCount] = useState(0);
   const [creditDetected, setCreditDetected] = useState(false);
 
+<<<<<<< HEAD
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(true);
@@ -366,6 +395,17 @@ export const DataImport: React.FC = () => {
     setEditingCell(null);
     setShowDeleteConfirm(false);
   };
+=======
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+  }, []);
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 
   const parseFile = async (file: File): Promise<any[]> => {
     const fileType = file.name.split('.').pop()?.toLowerCase();
@@ -422,11 +462,109 @@ export const DataImport: React.FC = () => {
     });
   };
 
+<<<<<<< HEAD
   const navigateToDashboard = () => {
+=======
+  const analyzeFile = async (file: File) => {
+    setIsAnalyzing(true);
+    setError(null);
+
+    try {
+      const data = await parseFile(file);
+      setImportedRowCount(data.length);
+
+      // Détection automatique
+      const dataType = await detectDataType(file);
+      const suggestedKPIs = getSuggestedKPIs(dataType);
+      console.log('🧠 Type détecté:', dataType, '| KPIs suggérés:', suggestedKPIs);
+      setRecommendedKPIs(suggestedKPIs);
+
+      const headers = data.length > 0 ? Object.keys(data[0]) : [];
+
+      let detectedSector: 'banking' | 'insurance' | null = null;
+      const bankingKeywords = ['loan', 'credit', 'interest', 'rate', 'amount', 'balance'];
+      const insuranceKeywords = ['premium', 'claim', 'policy', 'coverage', 'deductible'];
+
+      const headerLower = headers.map(h => h.toLowerCase()).join(' ');
+      if (bankingKeywords.some(keyword => headerLower.includes(keyword))) {
+        detectedSector = 'banking';
+      } else if (insuranceKeywords.some(keyword => headerLower.includes(keyword))) {
+        detectedSector = 'insurance';
+      }
+
+      setDetectedSector(detectedSector);
+
+      const creditColumns = ['loan_id', 'customer_id', 'amount', 'rate', 'maturity'];
+      const foundColumns = creditColumns.filter(col => 
+        headers.some(c => c.toLowerCase().includes(col))
+      );
+
+      if (foundColumns.length >= 3) {
+        setCreditDetected(true);
+        console.log('🎯 Portefeuille de crédit détecté!');
+      }
+
+      const importData = {
+        fileName: file.name,
+        rowCount: data.length,
+        data: data,
+        headers: headers,
+        sector: detectedSector,
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem('importedData', JSON.stringify(importData));
+
+      if (creditDetected || foundColumns.length >= 3) {
+        localStorage.setItem('creditRiskData', JSON.stringify(importData));
+        if (typeof setUserProfile === 'function') {
+          setUserProfile({ id: 'banker', name: 'Banquier' });
+        }
+      }
+
+      if (detectedSector) {
+        setSelectedSector(detectedSector);
+      }
+
+      setAnalysisComplete(true);
+
+    } catch (error) {
+      console.error('Erreur analyse:', error);
+      setError(error instanceof Error ? error.message : 'Erreur lors de l\'analyse');
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleDrop = useCallback(async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const droppedFile = e.dataTransfer.files[0];
+    if (droppedFile) {
+      setFile(droppedFile);
+      setAnalysisComplete(false);
+      await analyzeFile(droppedFile);
+    }
+  }, []);
+
+  const handleFileSelect = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+      setAnalysisComplete(false);
+      await analyzeFile(selectedFile);
+    }
+  }, []);
+
+  const navigateToDashboard = () => {
+    console.log('🚀 Navigation vers Dashboard depuis DataImport');
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
     setActiveModule('dashboard');
   };
 
   const resetImport = () => {
+<<<<<<< HEAD
     handleClearData();
   };
 
@@ -895,3 +1033,17 @@ export const DataImport: React.FC = () => {
     </div>
   );
 };
+=======
+    setFile(null);
+    setUploadProgress(0);
+    setAnalysisComplete(false);
+    setDetectedSector(null);
+    setRecommendedKPIs([]);
+    setError(null);
+    setImportedRowCount(0);
+    setCreditDetected(false);
+  };
+
+  return <div>{/* UI JSX ici (inchangé pour simplifier l'exemple) */}</div>;
+};
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2

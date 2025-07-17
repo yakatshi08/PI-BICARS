@@ -2,11 +2,18 @@ import React, { useState } from 'react';
 import { 
   Shield, Calculator, FileCheck, Activity,
   TrendingUp, AlertTriangle, PieChart as PieChartIcon, 
+<<<<<<< HEAD
   ArrowUp, ArrowDown, Info, ArrowLeft, FileText
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useTranslation } from '../hooks/useTranslation';
 import { useNavigate } from 'react-router-dom';
+=======
+  ArrowUp, ArrowDown, Info
+} from 'lucide-react';
+import { useStore } from '../store';
+import { useTranslation } from '../hooks/useTranslation';
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -18,10 +25,14 @@ import {
 export const InsuranceCore: React.FC = () => {
   const { darkMode } = useStore();
   const { t } = useTranslation();
+<<<<<<< HEAD
   const navigate = useNavigate();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
   const [isGeneratingQRT, setIsGeneratingQRT] = useState(false);
   const [isRunningORSA, setIsRunningORSA] = useState(false);
+=======
+  const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
 
   const insuranceMetrics = [
     {
@@ -84,7 +95,10 @@ export const InsuranceCore: React.FC = () => {
 
   const modules = [
     {
+<<<<<<< HEAD
       type: 'solvency',
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
       title: 'Solvency II',
       icon: Shield,
       color: 'purple',
@@ -92,7 +106,10 @@ export const InsuranceCore: React.FC = () => {
       description: 'Conformité réglementaire Solvency II'
     },
     {
+<<<<<<< HEAD
       type: 'actuarial',
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
       title: 'Actuarial Analytics',
       icon: Calculator,
       color: 'blue',
@@ -100,7 +117,10 @@ export const InsuranceCore: React.FC = () => {
       description: 'Analyses actuarielles et projections'
     },
     {
+<<<<<<< HEAD
       type: 'claims',
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
       title: 'Claims & Underwriting',
       icon: FileCheck,
       color: 'green',
@@ -142,6 +162,7 @@ export const InsuranceCore: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
   // Fonctions de navigation pour les KPIs
   const handleKPIClick = (kpiId: string) => {
     const routes: { [key: string]: string } = {
@@ -215,6 +236,18 @@ export const InsuranceCore: React.FC = () => {
               </p>
             </div>
           </div>
+=======
+  return (
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+            Insurance Core Module
+          </h1>
+          <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            {t('insurance.subtitle', 'Solvency II, métriques techniques et gestion des risques d\'assurance')}
+          </p>
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
         </div>
 
         <div className="mb-8">
@@ -227,9 +260,16 @@ export const InsuranceCore: React.FC = () => {
               return (
                 <div
                   key={metric.id}
+<<<<<<< HEAD
                   onClick={() => handleKPIClick(metric.id)}
                   className={`rounded-xl p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl
                     ${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} shadow-lg`}
+=======
+                  onClick={() => setSelectedMetric(selectedMetric === metric.id ? null : metric.id)}
+                  className={`rounded-xl p-6 cursor-pointer transition-all ${
+                    darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
+                  } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}`}
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-3 rounded-lg ${getColorClasses(metric.color, 'bg')}`}>
@@ -260,6 +300,28 @@ export const InsuranceCore: React.FC = () => {
                       <span className="ml-1">{metric.trend}</span>
                     </div>
                   </div>
+<<<<<<< HEAD
+=======
+
+                  {selectedMetric === metric.id && metric.id === 'scr-coverage' && (
+                    <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                      <div className="space-y-2">
+                        <div className="flex justify-between text-sm">
+                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Own Funds</span>
+                          <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {solvencyDetails[metric.id].ownFunds}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-sm">
+                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>SCR Total</span>
+                          <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                            {solvencyDetails[metric.id].totalSCR}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
                 </div>
               );
             })}
@@ -282,7 +344,11 @@ export const InsuranceCore: React.FC = () => {
           </div>
         )}
         
+<<<<<<< HEAD
         {/* Section Graphiques */}
+=======
+        {/* Section Graphiques - NOUVEAU */}
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Évolution Solvency II */}
           <div className={`rounded-xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
@@ -438,17 +504,26 @@ export const InsuranceCore: React.FC = () => {
           </div>
         </div>
 
+<<<<<<< HEAD
         {/* Modules */}
+=======
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module, index) => {
             const Icon = module.icon;
             return (
               <div 
                 key={index}
+<<<<<<< HEAD
                 onClick={() => handleModuleClick(module.type)}
                 className={`rounded-xl p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
                   darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
                 } shadow-lg`}
+=======
+                className={`rounded-xl p-6 transition-all hover:shadow-lg cursor-pointer ${
+                  darkMode ? 'bg-gray-800' : 'bg-white'
+                }`}
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
               >
                 <Icon className={`h-8 w-8 mb-4 ${getColorClasses(module.color, 'text')}`} />
                 <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -476,6 +551,7 @@ export const InsuranceCore: React.FC = () => {
           })}
         </div>
 
+<<<<<<< HEAD
         {/* Actions rapides */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <button 
@@ -516,6 +592,30 @@ export const InsuranceCore: React.FC = () => {
                 Own Risk and Solvency Assessment
               </p>
             </div>
+=======
+        {/* Actions rapides - NOUVEAU */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
+            darkMode 
+              ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
+              : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
+          }`}>
+            <FileCheck className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              {t('insurance.generateQRT', 'Générer QRT Solvency II')}
+            </p>
+          </button>
+
+          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
+            darkMode 
+              ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
+              : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
+          }`}>
+            <Activity className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              {t('insurance.runORSA', 'Lancer analyse ORSA')}
+            </p>
+>>>>>>> fbec03c06150e04d48d84815960898c3c347b0e2
           </button>
         </div>
       </div>
