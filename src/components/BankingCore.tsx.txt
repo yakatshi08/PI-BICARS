@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useStore } from '../../store';
 import { 
   TrendingUp, TrendingDown, DollarSign, Shield, Activity, 
   AlertTriangle, Info, RefreshCw, Download, Calendar,
-  BarChart3, PieChart, Target, Percent, ArrowLeft
+  BarChart3, PieChart, Target, Percent
 } from 'lucide-react';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
@@ -32,14 +31,16 @@ interface KPIData {
   description: string;
 }
 
-const BankingDashboard: React.FC = () => {
+const BankingCore: React.FC = () => {
   const { darkMode } = useStore();
-  const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('1M');
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Données simulées pour les graphiques
   const [ratioHistory, setRatioHistory] = useState<RatioData[]>([]);
   const [currentKPIs, setCurrentKPIs] = useState<KPIData[]>([]);
 
+  // Générer des données historiques
   useEffect(() => {
     generateHistoricalData();
     generateKPIs();
@@ -106,7 +107,6 @@ const BankingDashboard: React.FC = () => {
     ]);
   };
 
-  // Fonction de rafraîchissement ajoutée
   const handleRefresh = () => {
     setIsRefreshing(true);
     setTimeout(() => {
@@ -116,12 +116,14 @@ const BankingDashboard: React.FC = () => {
     }, 1000);
   };
 
+  // Données pour le graphique en secteurs
   const pieData = [
     { name: 'Tier 1', value: 65, color: '#3B82F6' },
     { name: 'Tier 2', value: 20, color: '#8B5CF6' },
     { name: 'Tier 3', value: 15, color: '#10B981' }
   ];
 
+  // Couleurs personnalisées
   const chartColors = {
     tier1: '#3B82F6',
     car: '#8B5CF6',
@@ -131,33 +133,21 @@ const BankingDashboard: React.FC = () => {
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* Header */}
       <div className={`${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'} border-b`}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate(-1)}
-                className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2
-                  ${darkMode 
-                    ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Retour
-              </button>
-              
-              <div>
-                <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Banking Dashboard - Tableau de bord réglementaire
-                </h1>
-                <p className={`mt-1 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Suivi en temps réel des ratios prudentiels et de solvabilité
-                </p>
-              </div>
+            <div>
+              <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Banking Core - Tableau de bord réglementaire
+              </h1>
+              <p className={`mt-1 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                Suivi en temps réel des ratios prudentiels et de solvabilité
+              </p>
             </div>
             
             <div className="flex items-center gap-3">
+              {/* Sélecteur de période */}
               <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 dark:bg-gray-700">
                 {['1M', '3M', '1Y'].map((period) => (
                   <button
@@ -178,6 +168,7 @@ const BankingDashboard: React.FC = () => {
                 ))}
               </div>
               
+              {/* Boutons d'action */}
               <button
                 onClick={handleRefresh}
                 className={`p-2 rounded-lg transition-all ${
@@ -199,7 +190,9 @@ const BankingDashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Contenu principal */}
       <div className="p-6">
+        {/* KPIs Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {currentKPIs.map((kpi, index) => (
             <div
@@ -274,7 +267,9 @@ const BankingDashboard: React.FC = () => {
           ))}
         </div>
 
+        {/* Graphiques */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Évolution des ratios */}
           <div className={`rounded-xl p-6 shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Évolution des ratios de solvabilité
@@ -322,6 +317,7 @@ const BankingDashboard: React.FC = () => {
             </ResponsiveContainer>
           </div>
 
+          {/* Ratios de liquidité */}
           <div className={`rounded-xl p-6 shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Ratios de liquidité
@@ -368,7 +364,9 @@ const BankingDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Composition du capital et alertes */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Composition du capital */}
           <div className={`rounded-xl p-6 shadow-lg ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Composition du capital
@@ -395,6 +393,7 @@ const BankingDashboard: React.FC = () => {
             </ResponsiveContainer>
           </div>
 
+          {/* Alertes réglementaires */}
           <div className={`rounded-xl p-6 shadow-lg lg:col-span-2 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
             <h2 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
               Alertes réglementaires
@@ -438,4 +437,4 @@ const BankingDashboard: React.FC = () => {
   );
 };
 
-export default BankingDashboard;
+export default BankingCore;

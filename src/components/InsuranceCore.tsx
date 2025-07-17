@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import { 
   Shield, Calculator, FileCheck, Activity,
   TrendingUp, AlertTriangle, PieChart as PieChartIcon, 
-  ArrowUp, ArrowDown, Info
+  ArrowUp, ArrowDown, Info, ArrowLeft, FileText
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useTranslation } from '../hooks/useTranslation';
+import { useNavigate } from 'react-router-dom';
 import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend,
@@ -17,7 +18,10 @@ import {
 export const InsuranceCore: React.FC = () => {
   const { darkMode } = useStore();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+  const [isGeneratingQRT, setIsGeneratingQRT] = useState(false);
+  const [isRunningORSA, setIsRunningORSA] = useState(false);
 
   const insuranceMetrics = [
     {
@@ -80,6 +84,7 @@ export const InsuranceCore: React.FC = () => {
 
   const modules = [
     {
+      type: 'solvency',
       title: 'Solvency II',
       icon: Shield,
       color: 'purple',
@@ -87,6 +92,7 @@ export const InsuranceCore: React.FC = () => {
       description: 'Conformité réglementaire Solvency II'
     },
     {
+      type: 'actuarial',
       title: 'Actuarial Analytics',
       icon: Calculator,
       color: 'blue',
@@ -94,6 +100,7 @@ export const InsuranceCore: React.FC = () => {
       description: 'Analyses actuarielles et projections'
     },
     {
+      type: 'claims',
       title: 'Claims & Underwriting',
       icon: FileCheck,
       color: 'green',
@@ -135,16 +142,79 @@ export const InsuranceCore: React.FC = () => {
     }
   };
 
+  // Fonctions de navigation pour les KPIs
+  const handleKPIClick = (kpiId: string) => {
+    const routes: { [key: string]: string } = {
+      'scr-coverage': '/insurance/scr-details',
+      'combined-ratio': '/insurance/combined-ratio',
+      'loss-ratio': '/insurance/loss-ratio-details'
+    };
+    
+    if (routes[kpiId]) {
+      navigate(routes[kpiId]);
+    }
+  };
+
+  // Fonctions pour les modules
+  const handleModuleClick = (moduleType: string) => {
+    const routes: { [key: string]: string } = {
+      'solvency': '/insurance/solvency-module',
+      'actuarial': '/insurance/actuarial-analysis',
+      'claims': '/insurance/claims-management'
+    };
+    
+    if (routes[moduleType]) {
+      navigate(routes[moduleType]);
+    }
+  };
+
+  // Fonctions pour les actions
+  const handleGenerateQRT = async () => {
+    setIsGeneratingQRT(true);
+    
+    // Simuler un appel API
+    setTimeout(() => {
+      setIsGeneratingQRT(false);
+      alert('QRT Solvency II généré avec succès !');
+    }, 2000);
+  };
+
+  const handleRunORSA = async () => {
+    setIsRunningORSA(true);
+    
+    setTimeout(() => {
+      setIsRunningORSA(false);
+      alert('Analyse ORSA lancée avec succès !');
+    }, 3000);
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Insurance Core Module
-          </h1>
-          <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-            {t('insurance.subtitle', 'Solvency II, métriques techniques et gestion des risques d\'assurance')}
-          </p>
+        {/* Header avec bouton retour */}
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className={`px-4 py-2 rounded-lg font-medium transition-all flex items-center gap-2
+                ${darkMode 
+                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Retour
+            </button>
+            
+            <div>
+              <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                Insurance Core Module
+              </h1>
+              <p className={`mt-2 text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                {t('insurance.subtitle', 'Solvency II, métriques techniques et gestion des risques d\'assurance')}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mb-8">
@@ -157,10 +227,9 @@ export const InsuranceCore: React.FC = () => {
               return (
                 <div
                   key={metric.id}
-                  onClick={() => setSelectedMetric(selectedMetric === metric.id ? null : metric.id)}
-                  className={`rounded-xl p-6 cursor-pointer transition-all ${
-                    darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
-                  } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}`}
+                  onClick={() => handleKPIClick(metric.id)}
+                  className={`rounded-xl p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl
+                    ${darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'} shadow-lg`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-3 rounded-lg ${getColorClasses(metric.color, 'bg')}`}>
@@ -191,25 +260,6 @@ export const InsuranceCore: React.FC = () => {
                       <span className="ml-1">{metric.trend}</span>
                     </div>
                   </div>
-
-                  {selectedMetric === metric.id && metric.id === 'scr-coverage' && (
-                    <div className={`mt-4 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Own Funds</span>
-                          <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {solvencyDetails[metric.id].ownFunds}
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className={darkMode ? 'text-gray-400' : 'text-gray-600'}>SCR Total</span>
-                          <span className={`font-medium ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                            {solvencyDetails[metric.id].totalSCR}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -232,7 +282,7 @@ export const InsuranceCore: React.FC = () => {
           </div>
         )}
         
-        {/* Section Graphiques - NOUVEAU */}
+        {/* Section Graphiques */}
         <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Évolution Solvency II */}
           <div className={`rounded-xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
@@ -388,15 +438,17 @@ export const InsuranceCore: React.FC = () => {
           </div>
         </div>
 
+        {/* Modules */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {modules.map((module, index) => {
             const Icon = module.icon;
             return (
               <div 
                 key={index}
-                className={`rounded-xl p-6 transition-all hover:shadow-lg cursor-pointer ${
-                  darkMode ? 'bg-gray-800' : 'bg-white'
-                }`}
+                onClick={() => handleModuleClick(module.type)}
+                className={`rounded-xl p-6 cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
+                  darkMode ? 'bg-gray-800 hover:bg-gray-700' : 'bg-white hover:bg-gray-50'
+                } shadow-lg`}
               >
                 <Icon className={`h-8 w-8 mb-4 ${getColorClasses(module.color, 'text')}`} />
                 <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
@@ -424,28 +476,46 @@ export const InsuranceCore: React.FC = () => {
           })}
         </div>
 
-        {/* Actions rapides - NOUVEAU */}
+        {/* Actions rapides */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
-            darkMode 
-              ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
-              : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
-          }`}>
-            <FileCheck className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-            <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('insurance.generateQRT', 'Générer QRT Solvency II')}
-            </p>
+          <button 
+            onClick={handleGenerateQRT}
+            disabled={isGeneratingQRT}
+            className={`p-6 rounded-xl border-2 border-dashed transition-all flex items-center justify-center gap-4 ${
+              darkMode 
+                ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
+                : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
+            } ${isGeneratingQRT ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            <FileText className={`h-8 w-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <div className="text-left">
+              <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {isGeneratingQRT ? 'Génération en cours...' : t('insurance.generateQRT', 'Générer QRT Solvency II')}
+              </p>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                Rapport trimestriel réglementaire
+              </p>
+            </div>
           </button>
 
-          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
-            darkMode 
-              ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
-              : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
-          }`}>
-            <Activity className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
-            <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-              {t('insurance.runORSA', 'Lancer analyse ORSA')}
-            </p>
+          <button 
+            onClick={handleRunORSA}
+            disabled={isRunningORSA}
+            className={`p-6 rounded-xl border-2 border-dashed transition-all flex items-center justify-center gap-4 ${
+              darkMode 
+                ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
+                : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
+            } ${isRunningORSA ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+          >
+            <Activity className={`h-8 w-8 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
+            <div className="text-left">
+              <p className={`font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                {isRunningORSA ? 'Analyse en cours...' : t('insurance.runORSA', 'Lancer analyse ORSA')}
+              </p>
+              <p className={`text-sm mt-1 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
+                Own Risk and Solvency Assessment
+              </p>
+            </div>
           </button>
         </div>
       </div>
