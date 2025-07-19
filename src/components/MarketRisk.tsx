@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
   TrendingUp, AlertTriangle, BarChart3, DollarSign, 
   Activity, Shield, ArrowUpRight, ArrowDownRight,
@@ -11,6 +11,7 @@ import {
   CartesianGrid, Tooltip, Legend, ResponsiveContainer,
   Cell, ReferenceLine, Brush
 } from 'recharts';
+import { useStore } from '../store'; // Correction du chemin d'import
 
 const MarketRisk = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -89,8 +90,153 @@ const MarketRisk = () => {
     { greek: 'Rho', equity: 1.2, fx: 0.5, rates: 8.9, commodity: 0.3 }
   ];
 
-  const formatTabName = (tab) => {
+  const formatTabName = (tab: string) => {
     return tab.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+  };
+
+  // Composant Netting Benefit Chart - CORRIGÉ
+  const NettingBenefitChart: React.FC = () => {
+    const { darkMode } = useStore();
+    
+    const data = [
+      { name: 'Gross', value: 180, fill: '#3B82F6' },
+      { name: 'Net', value: 125.6, fill: '#10B981' }
+    ];
+  
+    const reduction = ((180 - 125.6) / 180 * 100).toFixed(1);
+  
+    // Custom label component pour afficher les valeurs au-dessus des barres
+    const CustomLabel = (props: any) => {
+      const { x, y, width, value } = props;
+      return (
+        <text 
+          x={x + width / 2} 
+          y={y - 10} 
+          fill={darkMode ? '#E5E7EB' : '#374151'}
+          textAnchor="middle"
+          fontSize={16}
+          fontWeight="bold"
+        >
+          €{value}M
+        </text>
+      );
+    };
+  
+    return (
+      <div className={`rounded-xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white shadow-lg'}`}>
+        <h3 className={`text-lg font-bold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+          Netting Benefit
+        </h3>
+        <p className={`text-sm mb-6 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+          Netting Effect Over Gross Exposure
+        </p>
+        
+        <div className="relative">
+          <ResponsiveContainer width="100%" height={280}>
+            <BarChart 
+              data={data} 
+              margin={{ top: 40, right: 20, left: 20, bottom: 40 }}
+            >
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                stroke={darkMode ? '#374151' : '#E5E7EB'} 
+                vertical={false}
+              />
+              <XAxis 
+                dataKey="name" 
+                stroke={darkMode ? '#9CA3AF' : '#6B7280'}
+                tick={{ fontSize: 14, fontWeight: 500 }}
+                axisLine={{ stroke: darkMode ? '#4B5563' : '#D1D5DB' }}
+                tickLine={false}
+              />
+              <YAxis 
+                stroke={darkMode ? '#9CA3AF' : '#6B7280'}
+                tick={{ fontSize: 12 }}
+                axisLine={{ stroke: darkMode ? '#4B5563' : '#D1D5DB' }}
+                tickLine={false}
+                domain={[0, 200]}
+                ticks={[0, 50, 100, 150, 200]}
+                label={{ 
+                  value: 'Exposure (€M)', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  style: { 
+                    fill: darkMode ? '#9CA3AF' : '#6B7280',
+                    fontSize: 12
+                  }
+                }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
+                  border: darkMode ? '1px solid #374151' : '1px solid #E5E7EB',
+                  borderRadius: '8px',
+                  padding: '8px 12px'
+                }}
+                formatter={(value: number) => [`€${value}M`, 'Exposure']}
+                cursor={{ fill: darkMode ? 'rgba(75, 85, 99, 0.1)' : 'rgba(209, 213, 219, 0.3)' }}
+              />
+              <Bar 
+                dataKey="value" 
+                radius={[8, 8, 0, 0]}
+                label={<CustomLabel />}
+                maxBarSize={100}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={entry.fill} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+  
+          {/* Reduction Percentage - Positioned outside the chart */}
+          <div className={`absolute top-4 right-4 p-3 rounded-lg ${
+            darkMode ? 'bg-green-900/20' : 'bg-green-50'
+          }`}>
+            <div className="text-center">
+              <p className={`text-xs font-medium ${
+                darkMode ? 'text-green-400' : 'text-green-700'
+              }`}>
+                Reduction
+              </p>
+              <p className="text-2xl font-bold text-green-500 mt-1">
+                {reduction}%
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Legend positioned below the chart */}
+        <div className="flex justify-center mt-6 space-x-8">
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+            <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Gross Exposure
+            </span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-green-500 rounded mr-2"></div>
+            <span className={`text-sm font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Net Exposure
+            </span>
+          </div>
+        </div>
+  
+        {/* Additional info */}
+        <div className={`mt-6 pt-4 border-t ${darkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Gross Exposure</p>
+              <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€180.0M</p>
+            </div>
+            <div>
+              <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>Net Exposure</p>
+              <p className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>€125.6M</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -682,28 +828,8 @@ const MarketRisk = () => {
               </div>
             </div>
 
-            <div className="bg-slate-800 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Netting Benefit</h3>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-3xl font-bold text-emerald-500">{saccRData.netting.benefit}%</p>
-                    <p className="text-sm text-slate-400">Reduction</p>
-                  </div>
-                </div>
-                <ResponsiveContainer width="100%" height={150}>
-                  <RadarChart data={[
-                    { subject: 'Gross', value: saccRData.netting.gross },
-                    { subject: 'Net', value: saccRData.netting.net }
-                  ]}>
-                    <PolarGrid stroke="#334155" />
-                    <PolarAngleAxis dataKey="subject" stroke="#94a3b8" />
-                    <PolarRadiusAxis angle={90} domain={[0, 200]} stroke="none" />
-                    <Radar dataKey="value" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+            {/* Remplacé par le nouveau composant NettingBenefitChart */}
+            <NettingBenefitChart />
           </div>
 
           {/* Regulatory Capital Impact */}

@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useTranslation } from '../hooks/useTranslation';
+// Ajouter après les autres imports
+import { OpenAIService } from '../services/openai.service';
 
 interface Message {
   id: string;
@@ -250,38 +252,49 @@ Comment puis-je vous aider aujourd'hui ? Vous pouvez me demander :
     setMessages(prev => [...prev, loadingMessage]);
 
     try {
-      const response = await fetch('http://localhost:8000/api/copilot/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: message,
-          context: {
-            sector: selectedSector,
-            darkMode,
-            // Ajouter les données actuelles pour contexte
-            currentData: selectedSector === 'insurance' ? MOCK_INSURANCE_DATA : MOCK_BANKING_DATA
-          }
-        })
-      });
-
-      const data = await response.json();
+      // Utiliser OpenAI Service au lieu de l'API locale
+      const openAIService = OpenAIService.getInstance();
+      
+      // Préparer les messages pour OpenAI
+      const chatMessages = messages
+        .filter(m => !m.loading)
+        .map(m => ({
+          role: m.role as 'user' | 'assistant',
+          content: m.content
+        }));
+      
+      // Ajouter le nouveau message
+      chatMessages.push({ role: 'user', content: message });
+      
+      // Appeler OpenAI avec le contexte
+      const aiResponse = await openAIService.sendMessage(
+        chatMessages,
+        {
+          sector: selectedSector,
+          currentData: selectedSector === 'insurance' ? MOCK_INSURANCE_DATA : MOCK_BANKING_DATA
+        }
+      );
+      
+      // Supprimer le message de chargement
       setMessages(prev => prev.filter(m => m.id !== loadingMessage.id));
-
+      
+      // Analyser l'intent de la réponse
+      const intentResult = detectIntent(message);
+      
       const assistantMessage: Message = {
         id: Date.now().toString() + '-response',
         role: 'assistant',
-        content: formatResponse(data.response),
+        content: aiResponse,
         timestamp: new Date(),
-        intent: data.intent,
-        type: data.response?.type,
-        data: data.response
+        intent: intentResult.intent,
+        type: 'ai_response'
       };
+      
       setMessages(prev => [...prev, assistantMessage]);
-
-      if (data.suggestions && data.suggestions.length > 0) {
-        setSuggestions(data.suggestions);
-      }
-
+      
+      // Mettre à jour les suggestions contextuelles
+      updateContextualSuggestions(intentResult.intent || '', intentResult.entity || '');
+      
     } catch (error) {
       console.error('Erreur envoi message:', error);
       setMessages(prev => prev.filter(m => m.id !== loadingMessage.id));
@@ -290,7 +303,7 @@ Comment puis-je vous aider aujourd'hui ? Vous pouvez me demander :
       const fallbackMessage: Message = {
         id: Date.now().toString() + '-fallback',
         role: 'assistant',
-        content: "Je comprends votre demande, mais je ne peux pas me connecter au serveur pour le moment. Voici ce que je peux faire localement : calculer des ratios, expliquer des métriques, ou vous aider à naviguer dans l'application.",
+        content: "Je comprends votre demande, mais je rencontre une difficulté technique. Voici ce que je peux faire localement : calculer des ratios, expliquer des métriques, ou vous aider à naviguer dans l'application.",
         timestamp: new Date()
       };
       setMessages(prev => [...prev, fallbackMessage]);

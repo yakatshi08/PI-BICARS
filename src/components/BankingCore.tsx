@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // 👈 AJOUT de useNavigate
 import { 
   Building2, TrendingUp, Activity, DollarSign, AlertCircle,
   Shield, Percent, BarChart3, Info, ArrowUp, ArrowDown
@@ -16,9 +17,10 @@ import {
 export const BankingCore: React.FC = () => {
   const { darkMode } = useStore();
   const { t } = useTranslation();
+  const navigate = useNavigate(); // 👈 AJOUT de navigate
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
 
-  // Métriques bancaires principales
+  // Métriques bancaires principales avec paths
   const bankingMetrics = [
     {
       id: 'cet1',
@@ -28,7 +30,8 @@ export const BankingCore: React.FC = () => {
       status: 'healthy',
       icon: Shield,
       color: 'blue',
-      description: 'Common Equity Tier 1'
+      description: 'Common Equity Tier 1',
+      path: '/ratios/cet1' // 👈 AJOUT du path
     },
     {
       id: 'lcr',
@@ -38,7 +41,8 @@ export const BankingCore: React.FC = () => {
       status: 'healthy',
       icon: Activity,
       color: 'green',
-      description: 'Liquidity Coverage Ratio'
+      description: 'Liquidity Coverage Ratio',
+      path: '/ratios/lcr' // 👈 AJOUT du path
     },
     {
       id: 'npl',
@@ -48,7 +52,8 @@ export const BankingCore: React.FC = () => {
       status: 'healthy',
       icon: AlertCircle,
       color: 'purple',
-      description: 'Non-Performing Loans'
+      description: 'Non-Performing Loans',
+      path: '/ratios/npl' // 👈 AJOUT du path
     }
   ];
 
@@ -68,21 +73,27 @@ export const BankingCore: React.FC = () => {
       icon: Building2,
       color: 'blue',
       metrics: ['CET1', 'LCR', 'NSFR', 'Leverage Ratio'],
-      description: 'Ratios prudentiels réglementaires'
+      description: 'Ratios prudentiels réglementaires',
+      path: '/bale-ratios', // 👈 AJOUT du path
+      number: 1 // 👈 AJOUT du numéro
     },
     {
       title: 'Credit Risk',
       icon: TrendingUp,
       color: 'green',
       metrics: ['PD', 'LGD', 'EAD', 'Stress Testing'],
-      description: 'Gestion du risque de crédit'
+      description: 'Gestion du risque de crédit',
+      path: '/credit-risk', // 👈 AJOUT du path
+      number: 2 // 👈 AJOUT du numéro
     },
     {
       title: 'ALM & Liquidity',
       icon: Activity,
       color: 'purple',
       metrics: ['Gap Analysis', 'Duration', 'Convexity'],
-      description: 'Gestion actif-passif et liquidité'
+      description: 'Gestion actif-passif et liquidité',
+      path: '/alm-liquidity', // 👈 AJOUT du path
+      number: 3 // 👈 AJOUT du numéro
     }
   ];
 
@@ -132,7 +143,7 @@ export const BankingCore: React.FC = () => {
               return (
                 <div
                   key={metric.id}
-                  onClick={() => setSelectedMetric(selectedMetric === metric.id ? null : metric.id)}
+                  onClick={() => navigate(metric.path)} // 👈 AJOUT de la navigation
                   className={`rounded-xl p-6 cursor-pointer transition-all ${
                     darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
                   } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}`}
@@ -200,10 +211,15 @@ export const BankingCore: React.FC = () => {
             return (
               <div 
                 key={index}
-                className={`rounded-xl p-6 transition-all hover:shadow-lg cursor-pointer ${
+                onClick={() => navigate(module.path)} // 👈 AJOUT de la navigation
+                className={`rounded-xl p-6 transition-all hover:shadow-lg cursor-pointer relative ${
                   darkMode ? 'bg-gray-800' : 'bg-white'
                 }`}
               >
+                {/* 👈 AJOUT du numéro en grand */}
+                <div className={`absolute top-4 right-4 text-6xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
+                  {module.number}
+                </div>
                 <Icon className={`h-8 w-8 mb-4 ${getColorClasses(module.color, 'text')}`} />
                 <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                   {module.title}
@@ -232,22 +248,34 @@ export const BankingCore: React.FC = () => {
 
         {/* Actions rapides */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
+          <button 
+            onClick={() => navigate('/corep-report')} // 👈 AJOUT de la navigation
+            className={`p-4 rounded-xl border-2 border-dashed transition-all relative ${
             darkMode 
               ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
               : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
           }`}>
+            {/* 👈 AJOUT du numéro 4 */}
+            <div className={`absolute top-2 right-4 text-4xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
+              4
+            </div>
             <BarChart3 className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
             <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               {t('banking.generateReport', 'Générer un rapport COREP')}
             </p>
           </button>
 
-          <button className={`p-4 rounded-xl border-2 border-dashed transition-all ${
+          <button 
+            onClick={() => navigate('/stress-test')} // 👈 AJOUT de la navigation
+            className={`p-4 rounded-xl border-2 border-dashed transition-all relative ${
             darkMode 
               ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
               : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
           }`}>
+            {/* 👈 AJOUT du numéro 5 */}
+            <div className={`absolute top-2 right-4 text-4xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
+              5
+            </div>
             <Info className={`h-6 w-6 mb-2 mx-auto ${darkMode ? 'text-gray-400' : 'text-gray-600'}`} />
             <p className={`text-center font-medium ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
               {t('banking.stressTest', 'Lancer un stress test')}
