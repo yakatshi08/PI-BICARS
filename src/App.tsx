@@ -13,10 +13,9 @@ import { InsuranceCore } from './components/InsuranceCore';
 import { Settings } from './components/Settings';
 
 // Imports par défaut (sans accolades)
-// import Sidebar from './components/Sidebar'; // ❌ SUPPRIMÉ - Plus besoin
 import Analyses from './components/Analyses';
 import Reports from './components/Reports';
-import CreditRisk from './components/CreditRisk';
+import CreditRiskComponent from './components/CreditRisk'; // Renommé pour éviter conflit
 import LiquidityALM from './components/LiquidityALM';
 import MarketRisk from './components/MarketRisk';
 import Predictions from './components/Predictions';
@@ -25,6 +24,16 @@ import Predictions from './components/Predictions';
 import ActuarialAnalytics from './components/ActuarialAnalytics';
 import ClaimsUnderwriting from './components/ClaimsUnderwriting';
 import BankingDashboard from './pages/banking/BankingDashboard';
+
+// Import pour ModulesSectoriels
+import ModulesSectoriels from './pages/ModulesSectoriels';
+
+// Nouveaux imports des pages (ajoutés selon consigne)
+import Home from './pages/IntelligentHomepage'; // Modifié ici
+import BaleRatios from './pages/BaleRatios';
+import CreditRisk from './pages/CreditRisk';
+import ALMLiquidity from './pages/ALMLiquidity';
+import CET1Page from './pages/ratios/CET1Page';
 
 // Composant temporaire pour les pages manquantes
 const InsurancePlaceholder = ({ title }: { title: string }) => {
@@ -60,24 +69,31 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          {/* Route par défaut */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Page d'accueil - AJOUT SELON CONSIGNE */}
+          <Route path="/" element={<Home />} />
+          
+          {/* Route par défaut modifiée */}
           <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Route Modules Sectoriels (Analyses avancées) */}
+          <Route path="/modules-sectoriels" element={<ModulesSectoriels />} />
           
           {/* Routes Banking */}
           <Route path="/banking" element={<BankingDashboard />} />
           <Route path="/banking/risk-analysis" element={<BankingDashboard />} />
-          <Route path="/banking/credit-risk" element={<CreditRisk />} />
+          <Route path="/banking/credit-risk" element={<CreditRiskComponent />} />
           <Route path="/banking/liquidity-alm" element={<LiquidityALM />} />
           <Route path="/banking/market-risk" element={<MarketRisk />} />
           
-          {/* Ajout des nouvelles routes Banking détaillées */}
-          <Route path="/ratios/cet1" element={<InsurancePlaceholder title="CET1 Ratio - Détails" />} />
+          {/* Ajout des nouvelles routes Banking détaillées - SELON CONSIGNE */}
+          <Route path="/bale-ratios" element={<BaleRatios />} />
+          <Route path="/credit-risk" element={<CreditRisk />} />
+          <Route path="/alm-liquidity" element={<ALMLiquidity />} />
+          <Route path="/ratios/cet1" element={<CET1Page />} />
+          
+          {/* Routes existantes pour les autres ratios */}
           <Route path="/ratios/lcr" element={<InsurancePlaceholder title="LCR - Liquidity Coverage Ratio" />} />
           <Route path="/ratios/npl" element={<InsurancePlaceholder title="NPL Ratio - Non-Performing Loans" />} />
-          <Route path="/bale-ratios" element={<InsurancePlaceholder title="Ratios Bâle III" />} />
-          <Route path="/credit-risk" element={<InsurancePlaceholder title="Credit Risk Management" />} />
-          <Route path="/alm-liquidity" element={<InsurancePlaceholder title="ALM & Liquidity" />} />
           <Route path="/corep-report" element={<InsurancePlaceholder title="Rapport COREP" />} />
           <Route path="/stress-test" element={<InsurancePlaceholder title="Stress Test" />} />
           
