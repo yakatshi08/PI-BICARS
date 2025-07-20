@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 👈 AJOUT de useNavigate
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Building2, TrendingUp, Activity, DollarSign, AlertCircle,
   Shield, Percent, BarChart3, Info, ArrowUp, ArrowDown
@@ -17,8 +17,13 @@ import {
 export const BankingCore: React.FC = () => {
   const { darkMode } = useStore();
   const { t } = useTranslation();
-  const navigate = useNavigate(); // 👈 AJOUT de navigate
+  const navigate = useNavigate();
   const [selectedMetric, setSelectedMetric] = useState<string | null>(null);
+
+  // Effet pour le rechargement des données
+  useEffect(() => {
+    setSelectedMetric(null);
+  }, []);
 
   // Métriques bancaires principales avec paths
   const bankingMetrics = [
@@ -31,7 +36,7 @@ export const BankingCore: React.FC = () => {
       icon: Shield,
       color: 'blue',
       description: 'Common Equity Tier 1',
-      path: '/ratios/cet1' // 👈 AJOUT du path
+      path: '/ratios/cet1'
     },
     {
       id: 'lcr',
@@ -42,7 +47,7 @@ export const BankingCore: React.FC = () => {
       icon: Activity,
       color: 'green',
       description: 'Liquidity Coverage Ratio',
-      path: '/ratios/lcr' // 👈 AJOUT du path
+      path: '/ratios/lcr'
     },
     {
       id: 'npl',
@@ -53,7 +58,7 @@ export const BankingCore: React.FC = () => {
       icon: AlertCircle,
       color: 'purple',
       description: 'Non-Performing Loans',
-      path: '/ratios/npl' // 👈 AJOUT du path
+      path: '/ratios/npl'
     }
   ];
 
@@ -74,8 +79,8 @@ export const BankingCore: React.FC = () => {
       color: 'blue',
       metrics: ['CET1', 'LCR', 'NSFR', 'Leverage Ratio'],
       description: 'Ratios prudentiels réglementaires',
-      path: '/bale-ratios', // 👈 AJOUT du path
-      number: 1 // 👈 AJOUT du numéro
+      path: '/bale-ratios',
+      number: 1
     },
     {
       title: 'Credit Risk',
@@ -83,8 +88,8 @@ export const BankingCore: React.FC = () => {
       color: 'green',
       metrics: ['PD', 'LGD', 'EAD', 'Stress Testing'],
       description: 'Gestion du risque de crédit',
-      path: '/credit-risk', // 👈 AJOUT du path
-      number: 2 // 👈 AJOUT du numéro
+      path: '/credit-risk',
+      number: 2
     },
     {
       title: 'ALM & Liquidity',
@@ -92,8 +97,8 @@ export const BankingCore: React.FC = () => {
       color: 'purple',
       metrics: ['Gap Analysis', 'Duration', 'Convexity'],
       description: 'Gestion actif-passif et liquidité',
-      path: '/alm-liquidity', // 👈 AJOUT du path
-      number: 3 // 👈 AJOUT du numéro
+      path: '/alm-liquidity',
+      number: 3
     }
   ];
 
@@ -143,7 +148,7 @@ export const BankingCore: React.FC = () => {
               return (
                 <div
                   key={metric.id}
-                  onClick={() => navigate(metric.path)} // 👈 AJOUT de la navigation
+                  onClick={() => navigate(metric.path)}
                   className={`rounded-xl p-6 cursor-pointer transition-all ${
                     darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
                   } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}`}
@@ -181,7 +186,7 @@ export const BankingCore: React.FC = () => {
           </div>
         </div>
 
-        {/* 👉 Graphique d'évolution (NOUVEAU) */}
+        {/* 👉 Graphique d'évolution */}
         <div className={`mb-8 rounded-xl p-6 ${darkMode ? 'bg-gray-800' : 'bg-white'}`}>
           <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
             Évolution des ratios prudentiels (6 derniers mois)
@@ -211,12 +216,11 @@ export const BankingCore: React.FC = () => {
             return (
               <div 
                 key={index}
-                onClick={() => navigate(module.path)} // 👈 AJOUT de la navigation
+                onClick={() => navigate(module.path)}
                 className={`rounded-xl p-6 transition-all hover:shadow-lg cursor-pointer relative ${
                   darkMode ? 'bg-gray-800' : 'bg-white'
                 }`}
               >
-                {/* 👈 AJOUT du numéro en grand */}
                 <div className={`absolute top-4 right-4 text-6xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
                   {module.number}
                 </div>
@@ -249,13 +253,12 @@ export const BankingCore: React.FC = () => {
         {/* Actions rapides */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
           <button 
-            onClick={() => navigate('/corep-report')} // 👈 AJOUT de la navigation
+            onClick={() => navigate('/corep-report')}
             className={`p-4 rounded-xl border-2 border-dashed transition-all relative ${
             darkMode 
               ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
               : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
           }`}>
-            {/* 👈 AJOUT du numéro 4 */}
             <div className={`absolute top-2 right-4 text-4xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
               4
             </div>
@@ -266,13 +269,12 @@ export const BankingCore: React.FC = () => {
           </button>
 
           <button 
-            onClick={() => navigate('/stress-test')} // 👈 AJOUT de la navigation
+            onClick={() => navigate('/stress-test')}
             className={`p-4 rounded-xl border-2 border-dashed transition-all relative ${
             darkMode 
               ? 'border-gray-700 hover:border-indigo-600 hover:bg-gray-800' 
               : 'border-gray-300 hover:border-indigo-500 hover:bg-gray-50'
           }`}>
-            {/* 👈 AJOUT du numéro 5 */}
             <div className={`absolute top-2 right-4 text-4xl font-bold opacity-10 ${darkMode ? 'text-gray-600' : 'text-gray-300'}`}>
               5
             </div>

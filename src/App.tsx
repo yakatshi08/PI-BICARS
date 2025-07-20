@@ -15,7 +15,7 @@ import { Settings } from './components/Settings';
 // Imports par défaut (sans accolades)
 import Analyses from './components/Analyses';
 import Reports from './components/Reports';
-import CreditRiskComponent from './components/CreditRisk'; // Renommé pour éviter conflit
+import CreditRiskComponent from './components/CreditRisk';
 import LiquidityALM from './components/LiquidityALM';
 import MarketRisk from './components/MarketRisk';
 import Predictions from './components/Predictions';
@@ -23,17 +23,19 @@ import Predictions from './components/Predictions';
 // Nouveaux imports
 import ActuarialAnalytics from './components/ActuarialAnalytics';
 import ClaimsUnderwriting from './components/ClaimsUnderwriting';
-import BankingDashboard from './pages/banking/BankingDashboard';
 
 // Import pour ModulesSectoriels
 import ModulesSectoriels from './pages/ModulesSectoriels';
 
-// Nouveaux imports des pages (ajoutés selon consigne)
-import Home from './pages/IntelligentHomepage'; // Modifié ici
+// Imports des pages
+import Home from './pages/IntelligentHomepage';
 import BaleRatios from './pages/BaleRatios';
 import CreditRisk from './pages/CreditRisk';
 import ALMLiquidity from './pages/ALMLiquidity';
 import CET1Page from './pages/ratios/CET1Page';
+// Commenté selon la consigne :
+// import NPLPage from './pages/ratios/NPLPage';
+// import LCRPage from './pages/ratios/LCRPage';
 
 // Composant temporaire pour les pages manquantes
 const InsurancePlaceholder = ({ title }: { title: string }) => {
@@ -69,36 +71,38 @@ function App() {
     <Router>
       <Layout>
         <Routes>
-          {/* Page d'accueil - AJOUT SELON CONSIGNE */}
+          {/* Page d'accueil */}
           <Route path="/" element={<Home />} />
           
-          {/* Route par défaut modifiée */}
+          {/* Dashboard */}
           <Route path="/dashboard" element={<Dashboard />} />
           
           {/* Route Modules Sectoriels (Analyses avancées) */}
           <Route path="/modules-sectoriels" element={<ModulesSectoriels />} />
           
-          {/* Routes Banking */}
-          <Route path="/banking" element={<BankingDashboard />} />
-          <Route path="/banking/risk-analysis" element={<BankingDashboard />} />
-          <Route path="/banking/credit-risk" element={<CreditRiskComponent />} />
-          <Route path="/banking/liquidity-alm" element={<LiquidityALM />} />
-          <Route path="/banking/market-risk" element={<MarketRisk />} />
+          {/* Routes Banking - ROUTE PRINCIPALE CORRIGÉE */}
+          <Route path="/banking" element={<BankingCore />} />
+          <Route path="/banking-core" element={<Navigate to="/banking" replace />} />
           
-          {/* Ajout des nouvelles routes Banking détaillées - SELON CONSIGNE */}
-          <Route path="/bale-ratios" element={<BaleRatios />} />
-          <Route path="/credit-risk" element={<CreditRisk />} />
-          <Route path="/alm-liquidity" element={<ALMLiquidity />} />
+          {/* Routes des modules Banking */}
+          <Route path="/banking/bale-ratios" element={<BaleRatios />} />
+          <Route path="/banking/credit-risk" element={<CreditRisk />} />
+          <Route path="/banking/alm-liquidity" element={<ALMLiquidity />} />
+          
+          {/* Routes des ratios détaillés */}
           <Route path="/ratios/cet1" element={<CET1Page />} />
-          
-          {/* Routes existantes pour les autres ratios */}
+          {/* Modifié selon la consigne : */}
           <Route path="/ratios/lcr" element={<InsurancePlaceholder title="LCR - Liquidity Coverage Ratio" />} />
-          <Route path="/ratios/npl" element={<InsurancePlaceholder title="NPL Ratio - Non-Performing Loans" />} />
-          <Route path="/corep-report" element={<InsurancePlaceholder title="Rapport COREP" />} />
-          <Route path="/stress-test" element={<InsurancePlaceholder title="Stress Test" />} />
+          <Route path="/ratios/npl" element={<InsurancePlaceholder title="NPL - Non-Performing Loans" />} />
+          <Route path="/ratios/nsfr" element={<InsurancePlaceholder title="NSFR - Net Stable Funding Ratio" />} />
+          
+          {/* Routes pour les actions rapides */}
+          <Route path="/reporting" element={<Reports />} />
+          <Route path="/banking/stress-test" element={<InsurancePlaceholder title="Stress Test" />} />
           
           {/* Routes Insurance */}
           <Route path="/insurance" element={<InsuranceCore />} />
+          <Route path="/insurance-core" element={<Navigate to="/insurance" replace />} />
           <Route path="/insurance/claims" element={<ClaimsUnderwriting />} />
           <Route path="/insurance/actuarial" element={<ActuarialAnalytics />} />
           <Route path="/insurance/scr-details" element={<InsurancePlaceholder title="SCR Coverage - Détails" />} />
@@ -118,6 +122,9 @@ function App() {
           <Route path="/data-import" element={<DataImport />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
+          
+          {/* Route 404 - Doit être la dernière */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>
     </Router>

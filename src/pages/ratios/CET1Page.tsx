@@ -61,7 +61,7 @@ const CET1Page = () => {
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
             <button
-              onClick={() => navigate('/banking-core')}
+              onClick={() => navigate('/banking')}  // Modification appliquée ici
               className={`p-2 rounded-lg transition-colors ${
                 darkMode 
                   ? 'bg-gray-800 hover:bg-gray-700 text-white' 

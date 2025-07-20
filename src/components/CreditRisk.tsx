@@ -1,26 +1,40 @@
-// Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\components\CreditRisk.tsx
-
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { 
-  TrendingDown, AlertTriangle, DollarSign, 
+  ArrowLeft, TrendingDown, AlertTriangle, DollarSign, 
   BarChart3, Activity, Shield, Calculator,
   FileText, TrendingUp
 } from 'lucide-react';
 
 export const CreditRisk: React.FC = () => {
   const { darkMode } = useStore();
+  const navigate = useNavigate();
 
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* Header du module */}
       <div className={`sticky top-0 z-40 ${darkMode ? 'bg-slate-900' : 'bg-white'} px-6 pt-6 pb-4 shadow-sm`}>
-        <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Credit Risk Management
-        </h1>
-        <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-          Analyse PD, LGD, EAD et calcul des provisions ECL
-        </p>
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={() => navigate('/banking')}  // Modification appliquée ici
+            className={`p-2 rounded-lg transition-colors ${
+              darkMode 
+                ? 'bg-gray-800 hover:bg-gray-700 text-white' 
+                : 'bg-white hover:bg-gray-100 text-gray-900'
+            } shadow-sm`}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+              Credit Risk Management
+            </h1>
+            <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+              Analyse PD, LGD, EAD et calcul des provisions ECL
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Contenu principal */}
