@@ -27,14 +27,14 @@ interface Suggestion {
   query: string;
 }
 
-// Données mockées pour les calculs locaux
+// Données mockées pour les calculs locaux - MODIFIÉES
 const MOCK_BANKING_DATA = {
-  cet1: { value: 14.8, threshold: 10.5, unit: '%', status: 'healthy' },
-  lcr: { value: 125.5, threshold: 100, unit: '%', status: 'healthy' },
-  nsfr: { value: 112.3, threshold: 100, unit: '%', status: 'healthy' },
-  npl: { value: 2.1, threshold: 5, unit: '%', status: 'healthy' },
+  cet1: { value: 14.2, threshold: 10.5, unit: '%', status: 'healthy' },
+  lcr: { value: 142, threshold: 100, unit: '%', status: 'healthy' },  // Changé de 125.5 à 142
+  nsfr: { value: 118, threshold: 100, unit: '%', status: 'healthy' }, // Changé de 112.3 à 118
+  npl: { value: 2.0, threshold: 5, unit: '%', status: 'healthy' },    // Changé de 2.1 à 2.0
   roe: { value: 12.8, threshold: 10, unit: '%', status: 'healthy' },
-  nii: { value: 3240000, unit: '€', trend: 'up', variation: '+12.5%' },
+  nii: { value: 2300000000, unit: '€', trend: 'up', variation: '+12%' }, // Changé pour €2.3B
   cost_income: { value: 48.2, threshold: 60, unit: '%', status: 'healthy' }
 };
 
@@ -48,7 +48,7 @@ const MOCK_INSURANCE_DATA = {
   technical_provisions: { value: 650000000, unit: '€' }
 };
 
-// Patterns de reconnaissance pour les commandes
+// Patterns de reconnaissance pour les commandes - ENRICHIS
 const COMMAND_PATTERNS = {
   // Banking
   'ratio cet1|cet1|capital tier 1|tier 1': 'cet1',
@@ -74,7 +74,13 @@ const COMMAND_PATTERNS = {
   'dashboard|tableau de bord': 'create_dashboard',
   'prédiction|forecast|prévision': 'prediction',
   'anomalie|detection': 'anomaly_detection',
-  'aide|help|expliquer|explication': 'explain'
+  'aide|help|expliquer|explication': 'explain',
+
+  // NOUVEAUX PATTERNS AJOUTÉS
+  'optimiser|optimisation|améliorer': 'optimization',
+  'facteurs de succès|analyser performance': 'performance_analysis',
+  'simulation|simuler|projeter': 'simulation',
+  'benchmark|comparer|comparaison': 'benchmark',
 };
 
 export const CoPilotIA: React.FC = () => {

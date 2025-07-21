@@ -5,6 +5,7 @@ import { useStore } from './store';
 // Imports nommés (avec accolades)
 import { AnalyticsMLModule } from './components/AnalyticsMLModule';
 import { BankingCore } from './components/BankingCore';
+import { BankingDashboard } from './components/BankingDashboard'; // Import ajouté
 import { CoPilotIA } from './components/CoPilotIA';
 import { Dashboard } from './components/Dashboard';
 import { DataImport } from './components/DataImport';
@@ -33,9 +34,6 @@ import BaleRatios from './pages/BaleRatios';
 import CreditRisk from './pages/CreditRisk';
 import ALMLiquidity from './pages/ALMLiquidity';
 import CET1Page from './pages/ratios/CET1Page';
-// Commenté selon la consigne :
-// import NPLPage from './pages/ratios/NPLPage';
-// import LCRPage from './pages/ratios/LCRPage';
 
 // Composant temporaire pour les pages manquantes
 const InsurancePlaceholder = ({ title }: { title: string }) => {
@@ -80,8 +78,9 @@ function App() {
           {/* Route Modules Sectoriels (Analyses avancées) */}
           <Route path="/modules-sectoriels" element={<ModulesSectoriels />} />
           
-          {/* Routes Banking - ROUTE PRINCIPALE CORRIGÉE */}
+          {/* Routes Banking */}
           <Route path="/banking" element={<BankingCore />} />
+          <Route path="/banking/dashboard" element={<BankingDashboard />} /> {/* Nouvelle route ajoutée */}
           <Route path="/banking-core" element={<Navigate to="/banking" replace />} />
           
           {/* Routes des modules Banking */}
@@ -91,7 +90,6 @@ function App() {
           
           {/* Routes des ratios détaillés */}
           <Route path="/ratios/cet1" element={<CET1Page />} />
-          {/* Modifié selon la consigne : */}
           <Route path="/ratios/lcr" element={<InsurancePlaceholder title="LCR - Liquidity Coverage Ratio" />} />
           <Route path="/ratios/npl" element={<InsurancePlaceholder title="NPL - Non-Performing Loans" />} />
           <Route path="/ratios/nsfr" element={<InsurancePlaceholder title="NSFR - Net Stable Funding Ratio" />} />
