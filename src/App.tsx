@@ -5,18 +5,20 @@ import { useStore } from './store';
 // Imports nommés (avec accolades)
 import { AnalyticsMLModule } from './components/AnalyticsMLModule';
 import { BankingCore } from './components/BankingCore';
-import { BankingDashboard } from './components/BankingDashboard'; // Import ajouté
+import { BankingDashboard } from './components/BankingDashboard';
+import { BankingStressTest } from './components/BankingStressTest';
+import { BankingCOREPExport } from './components/BankingCOREPExport';
 import { CoPilotIA } from './components/CoPilotIA';
 import { Dashboard } from './components/Dashboard';
 import { DataImport } from './components/DataImport';
 import { Header } from './components/Header';
 import { InsuranceCore } from './components/InsuranceCore';
 import { Settings } from './components/Settings';
+import { BankingSimulation } from './components/BankingSimulation';
 
 // Imports par défaut (sans accolades)
 import Analyses from './components/Analyses';
 import Reports from './components/Reports';
-import CreditRiskComponent from './components/CreditRisk';
 import LiquidityALM from './components/LiquidityALM';
 import MarketRisk from './components/MarketRisk';
 import Predictions from './components/Predictions';
@@ -80,7 +82,8 @@ function App() {
           
           {/* Routes Banking */}
           <Route path="/banking" element={<BankingCore />} />
-          <Route path="/banking/dashboard" element={<BankingDashboard />} /> {/* Nouvelle route ajoutée */}
+          <Route path="/banking/dashboard" element={<BankingDashboard />} />
+          <Route path="/banking/simulation" element={<BankingSimulation />} />
           <Route path="/banking-core" element={<Navigate to="/banking" replace />} />
           
           {/* Routes des modules Banking */}
@@ -96,7 +99,11 @@ function App() {
           
           {/* Routes pour les actions rapides */}
           <Route path="/reporting" element={<Reports />} />
-          <Route path="/banking/stress-test" element={<InsurancePlaceholder title="Stress Test" />} />
+          <Route path="/banking/stress-test" element={<BankingStressTest />} />
+          <Route path="/banking/corep-export" element={<BankingCOREPExport />} />
+          
+          {/* Route Credit Risk */}
+          <Route path="/credit-risk" element={<CreditRisk />} />
           
           {/* Routes Insurance */}
           <Route path="/insurance" element={<InsuranceCore />} />

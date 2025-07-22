@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { 
   TrendingUp, AlertCircle, CheckCircle, Activity,
-  BarChart3, PieChart, Download, Calendar,
-  ArrowUpRight, ArrowDownRight, Minus
+  BarChart3, PieChart, Download, Calendar, Shield,
+  ArrowUpRight, ArrowDownRight, Minus, FileText, AlertTriangle
 } from 'lucide-react';
 import { 
   AreaChart, Area, BarChart, Bar, PieChart as RechartsPie, Pie, Cell,
@@ -160,22 +160,31 @@ export const BankingDashboard: React.FC = () => {
           <div className="flex gap-3">
             <button
               onClick={() => navigate('/banking/simulation')}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
             >
+              <TrendingUp className="h-4 w-4" />
               Simulation 3 ans
             </button>
             <button
               onClick={() => navigate('/banking/stress-test')}
-              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-2"
             >
+              <AlertTriangle className="h-4 w-4" />
               Stress Test
             </button>
             <button
               onClick={() => navigate('/banking/corep-export')}
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2"
             >
-              <Download className="h-4 w-4" />
+              <FileText className="h-4 w-4" />
               Export COREP
+            </button>
+            <button
+              onClick={() => navigate('/credit-risk')}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors flex items-center gap-2"
+            >
+              <Shield className="h-4 w-4" />
+              Credit Risk
             </button>
           </div>
         </div>

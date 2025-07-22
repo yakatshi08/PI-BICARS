@@ -8,7 +8,7 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
-  ScatterChart, Scatter, ZAxis, AreaChart, Area
+  ScatterChart, Scatter, ZAxis
 } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 
@@ -38,7 +38,7 @@ interface ProvisionData {
   color: string;
 }
 
-const CreditRisk: React.FC = () => {
+export const CreditRisk: React.FC = () => {
   const navigate = useNavigate();
   const [selectedView, setSelectedView] = useState<'overview' | 'pd-lgd' | 'provisions' | 'validation'>('overview');
   const [selectedPeriod, setSelectedPeriod] = useState<'1M' | '3M' | '6M' | '1Y'>('3M');
@@ -794,5 +794,3 @@ const CreditRisk: React.FC = () => {
     </div>
   );
 };
-
-export default CreditRisk;
