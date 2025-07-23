@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Building2, TrendingUp, Activity, DollarSign, AlertCircle,
   Shield, Percent, BarChart3, Info, ArrowUp, ArrowDown, Lightbulb,
-  Bot, Sparkles  // Ajout des icônes Bot et Sparkles
+  Bot, Sparkles
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useTranslation } from '../hooks/useTranslation';
@@ -80,7 +80,7 @@ export const BankingCore: React.FC = () => {
     {
       id: 'lcr',
       name: 'LCR',
-      value: '142%',  // ✅ Valeur réaliste
+      value: '142%',
       numericValue: 142,
       trend: '+5%',
       status: 'healthy',
@@ -148,7 +148,7 @@ export const BankingCore: React.FC = () => {
       color: 'blue',
       metrics: ['CET1', 'LCR', 'NSFR', 'Leverage Ratio'],
       description: 'Ratios prudentiels réglementaires',
-      path: '/bale-ratios',
+      path: '/banking/bale-ratios',  // ✅ Corrigé avec /banking/
       number: 1
     },
     {
@@ -157,7 +157,7 @@ export const BankingCore: React.FC = () => {
       color: 'green',
       metrics: ['PD', 'LGD', 'EAD', 'Stress Testing'],
       description: 'Gestion du risque de crédit',
-      path: '/credit-risk',
+      path: '/banking/credit-risk',  // ✅ Corrigé avec /banking/
       number: 2
     },
     {
@@ -166,7 +166,7 @@ export const BankingCore: React.FC = () => {
       color: 'purple',
       metrics: ['Gap Analysis', 'Duration', 'Convexity'],
       description: 'Gestion actif-passif et liquidité',
-      path: '/alm-liquidity',
+      path: '/banking/alm-liquidity',  // ✅ CORRECTION ICI : ajout de /banking/
       number: 3
     }
   ];

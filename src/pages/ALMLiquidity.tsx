@@ -1,471 +1,804 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
-  ArrowLeft, TrendingUp, Droplets, Activity, 
-  BarChart3, Shield, AlertCircle, Download,
-  Calendar, Clock, DollarSign, Percent
+  Droplets, TrendingUp, AlertTriangle, BarChart3, 
+  Activity, LineChart as LineChartIcon, Shield, 
+  ArrowUpRight, ArrowDownRight, RefreshCw, Download,
+  Target, DollarSign, Calendar, Clock, ArrowLeft
 } from 'lucide-react';
-import { useStore } from '../store';
 import {
-  AreaChart, Area, BarChart, Bar, LineChart, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  Cell, Legend, ComposedChart
+  LineChart, Line, AreaChart, Area, BarChart, Bar,
+  PieChart, Pie, RadarChart, Radar, PolarGrid,
+  PolarAngleAxis, PolarRadiusAxis, XAxis, YAxis,
+  CartesianGrid, Tooltip, Legend, ResponsiveContainer,
+  Cell, ComposedChart
 } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 
 const ALMLiquidity = () => {
-  const { darkMode } = useStore();
   const navigate = useNavigate();
-  const [selectedView, setSelectedView] = useState('liquidity');
-  const [selectedPeriod, setSelectedPeriod] = useState('1M');
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedTimeFrame, setSelectedTimeFrame] = useState('1M');
+  const [selectedScenario, setSelectedScenario] = useState('baseline');
 
-  // Métriques principales de liquidité
-  const liquidityMetrics = [
-    {
-      name: 'LCR',
-      fullName: 'Liquidity Coverage Ratio',
-      value: 142,
-      minimum: 100,
-      trend: +5,
-      status: 'healthy'
-    },
-    {
-      name: 'NSFR',
-      fullName: 'Net Stable Funding Ratio',
-      value: 118,
-      minimum: 100,
-      trend: +2,
-      status: 'healthy'
-    },
-    {
-      name: 'Liquidity Buffer',
-      fullName: 'Coussin de liquidité',
-      value: '€8.2B',
-      trend: +3.5,
-      status: 'strong'
-    },
-    {
-      name: 'Survival Period',
-      fullName: 'Période de survie',
-      value: '45 jours',
-      trend: +3,
-      status: 'adequate'
-    }
+  // Données LCR (Liquidity Coverage Ratio)
+  const lcrData = [
+    { date: '2025-01-05', lcr: 145, nsfr: 112, required: 100 },
+    { date: '2025-01-06', lcr: 142, nsfr: 114, required: 100 },
+    { date: '2025-01-07', lcr: 148, nsfr: 113, required: 100 },
+    { date: '2025-01-08', lcr: 144, nsfr: 115, required: 100 },
+    { date: '2025-01-09', lcr: 146, nsfr: 116, required: 100 },
+    { date: '2025-01-10', lcr: 143, nsfr: 114, required: 100 },
+    { date: '2025-01-11', lcr: 147, nsfr: 117, required: 100 }
   ];
 
-  // Gap Analysis par maturité
-  const gapAnalysis = [
-    { maturity: 'O/N', assets: 15, liabilities: 12, gap: 3 },
-    { maturity: '1W', assets: 25, liabilities: 28, gap: -3 },
-    { maturity: '1M', assets: 45, liabilities: 40, gap: 5 },
-    { maturity: '3M', assets: 85, liabilities: 75, gap: 10 },
-    { maturity: '6M', assets: 120, liabilities: 110, gap: 10 },
-    { maturity: '1Y', assets: 180, liabilities: 165, gap: 15 },
-    { maturity: '3Y', assets: 250, liabilities: 235, gap: 15 },
-    { maturity: '5Y+', assets: 320, liabilities: 310, gap: 10 }
+  // Maturity Ladder
+  const maturityLadder = [
+    { bucket: 'Overnight', assets: 120, liabilities: -80, gap: 40, cumGap: 40 },
+    { bucket: '1-7 days', assets: 85, liabilities: -65, gap: 20, cumGap: 60 },
+    { bucket: '7-30 days', assets: 150, liabilities: -120, gap: 30, cumGap: 90 },
+    { bucket: '1-3 months', assets: 200, liabilities: -180, gap: 20, cumGap: 110 },
+    { bucket: '3-6 months', assets: 180, liabilities: -170, gap: 10, cumGap: 120 },
+    { bucket: '6-12 months', assets: 160, liabilities: -155, gap: 5, cumGap: 125 },
+    { bucket: '> 1 year', assets: 300, liabilities: -290, gap: 10, cumGap: 135 }
   ];
 
-  // Courbe de taux
-  const yieldCurve = [
-    { maturity: 'O/N', current: 3.85, previous: 3.75, change: 0.10 },
-    { maturity: '1M', current: 3.92, previous: 3.85, change: 0.07 },
-    { maturity: '3M', current: 4.05, previous: 3.98, change: 0.07 },
-    { maturity: '6M', current: 4.15, previous: 4.10, change: 0.05 },
-    { maturity: '1Y', current: 4.22, previous: 4.20, change: 0.02 },
-    { maturity: '2Y', current: 4.10, previous: 4.15, change: -0.05 },
-    { maturity: '5Y', current: 3.85, previous: 3.95, change: -0.10 },
-    { maturity: '10Y', current: 3.75, previous: 3.88, change: -0.13 }
+  // HQLA Composition
+  const hqlaComposition = [
+    { name: 'Cash & Central Bank', value: 45, percentage: 30 },
+    { name: 'Level 1 Securities', value: 60, percentage: 40 },
+    { name: 'Level 2A Securities', value: 30, percentage: 20 },
+    { name: 'Level 2B Securities', value: 15, percentage: 10 }
   ];
 
-  // Stress test liquidité
-  const liquidityStress = [
-    { scenario: 'Normal', lcr: 142, nsfr: 118, buffer: 8.2 },
-    { scenario: 'Modéré', lcr: 125, nsfr: 110, buffer: 6.5 },
-    { scenario: 'Sévère', lcr: 105, nsfr: 95, buffer: 4.2 },
-    { scenario: 'Extrême', lcr: 85, nsfr: 82, buffer: 2.1 }
+  // Funding Sources
+  const fundingSources = [
+    { source: 'Retail Deposits', amount: 450, percentage: 35, stability: 95 },
+    { source: 'Corporate Deposits', amount: 320, percentage: 25, stability: 80 },
+    { source: 'Interbank', amount: 180, percentage: 14, stability: 60 },
+    { source: 'Capital Markets', amount: 230, percentage: 18, stability: 50 },
+    { source: 'Central Bank', amount: 100, percentage: 8, stability: 90 }
   ];
 
-  // Composition du buffer de liquidité
-  const bufferComposition = [
-    { type: 'Cash & Banques centrales', amount: 3.2, percentage: 39 },
-    { type: 'Obligations souveraines', amount: 2.8, percentage: 34 },
-    { type: 'Covered bonds', amount: 1.5, percentage: 18 },
-    { type: 'Corporate bonds (AAA-AA)', amount: 0.7, percentage: 9 }
+  // Stress Test Scenarios
+  const stressScenarios = [
+    { scenario: 'Baseline', lcr: 147, nsfr: 117, survivalDays: 90 },
+    { scenario: 'Mild Stress', lcr: 125, nsfr: 108, survivalDays: 60 },
+    { scenario: 'Moderate Stress', lcr: 105, nsfr: 95, survivalDays: 35 },
+    { scenario: 'Severe Stress', lcr: 85, nsfr: 82, survivalDays: 20 },
+    { scenario: 'Combined Crisis', lcr: 65, nsfr: 70, survivalDays: 12 }
   ];
 
-  // Concentration des financements
-  const fundingConcentration = [
-    { source: 'Dépôts retail', amount: 45, stable: 95 },
-    { source: 'Dépôts corporate', amount: 25, stable: 75 },
-    { source: 'Interbancaire', amount: 15, stable: 40 },
-    { source: 'Émissions obligataires', amount: 10, stable: 85 },
-    { source: 'Autres', amount: 5, stable: 60 }
+  // ALM Gap Analysis
+  const almGapData = [
+    { maturity: '0-3M', assets: 355, liabilities: 265, gap: 90 },
+    { maturity: '3-6M', assets: 180, liabilities: 170, gap: 10 },
+    { maturity: '6-12M', assets: 160, liabilities: 155, gap: 5 },
+    { maturity: '1-3Y', assets: 220, liabilities: 215, gap: 5 },
+    { maturity: '3-5Y', assets: 150, liabilities: 160, gap: -10 },
+    { maturity: '>5Y', assets: 130, liabilities: 145, gap: -15 }
   ];
 
-  const colors = ['#8B5CF6', '#3B82F6', '#10B981', '#F59E0B', '#EF4444'];
+  // Interest Rate Risk
+  const durationGap = {
+    assets: 3.2,
+    liabilities: 2.8,
+    gap: 0.4,
+    convexity: 0.15
+  };
+
+  const formatTabName = (tab) => {
+    return tab.split('-').map(word => 
+      word.charAt(0).toUpperCase() + word.slice(1)
+    ).join(' ');
+  };
+
+  const COLORS = ['#8b5cf6', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => navigate('/banking')}  // Modification appliquée ici
-              className={`p-2 rounded-lg transition-colors ${
-                darkMode 
-                  ? 'bg-gray-800 hover:bg-gray-700 text-white' 
-                  : 'bg-white hover:bg-gray-100 text-gray-900'
-              } shadow-sm`}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
-              <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                ALM & Liquidity Management
-              </h1>
-              <p className={`mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                Gestion actif-passif et liquidité
-              </p>
-            </div>
+    <div className="min-h-screen bg-[#0f172a] text-white p-6">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Liquidity & ALM Management</h1>
+            <p className="text-[#94a3b8]">Real-time liquidity monitoring • Asset-Liability Management • Stress Testing</p>
           </div>
-          <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors flex items-center">
-            <Download className="h-4 w-4 mr-2" />
-            Export ALM
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate('/banking/dashboard')}
+              className="px-4 py-2 bg-[#1e293b] text-white rounded-lg hover:bg-[#334155] transition-colors flex items-center gap-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Retour Dashboard
+            </button>
+            <select
+              value={selectedTimeFrame}
+              onChange={(e) => setSelectedTimeFrame(e.target.value)}
+              className="bg-[#1e293b] border border-[#334155] rounded-lg px-4 py-2"
+            >
+              <option value="1D">1 Day</option>
+              <option value="1W">1 Week</option>
+              <option value="1M">1 Month</option>
+              <option value="3M">3 Months</option>
+              <option value="1Y">1 Year</option>
+            </select>
+            <button className="px-4 py-2 bg-[#6366f1] rounded-lg hover:bg-[#4f46e5] transition-colors flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Refresh
+            </button>
+            <button className="px-4 py-2 bg-[#1e293b] rounded-lg hover:bg-[#334155] transition-colors flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+          </div>
         </div>
 
-        {/* Onglets de navigation */}
-        <div className="flex space-x-1 mb-8">
-          {['liquidity', 'gap', 'rates', 'stress'].map((view) => (
+        {/* Tabs */}
+        <div className="flex gap-1 bg-[#1e293b] p-1 rounded-lg">
+          {['overview', 'liquidity-dashboard', 'stress-testing', 'alm-analytics'].map((tab) => (
             <button
-              key={view}
-              onClick={() => setSelectedView(view)}
-              className={`px-6 py-3 rounded-lg transition-colors ${
-                selectedView === view
-                  ? 'bg-indigo-600 text-white'
-                  : darkMode
-                  ? 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  : 'bg-white text-gray-700 hover:bg-gray-100'
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-2 rounded-md transition-colors ${
+                activeTab === tab
+                  ? 'bg-[#6366f1] text-white'
+                  : 'text-[#94a3b8] hover:text-white hover:bg-[#334155]'
               }`}
             >
-              {view === 'liquidity' && 'Liquidité'}
-              {view === 'gap' && 'Gap Analysis'}
-              {view === 'rates' && 'Taux d\'intérêt'}
-              {view === 'stress' && 'Stress Testing'}
+              {formatTabName(tab)}
             </button>
           ))}
         </div>
+      </div>
 
-        {selectedView === 'liquidity' && (
-          <>
-            {/* Métriques de liquidité */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-              {liquidityMetrics.map((metric, index) => (
-                <div
-                  key={index}
-                  className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm hover:shadow-lg transition-all`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <h3 className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                      {metric.name}
-                    </h3>
-                    <Droplets className={`h-5 w-5 ${
-                      metric.status === 'healthy' || metric.status === 'strong' 
-                        ? 'text-blue-500' 
-                        : 'text-yellow-500'
-                    }`} />
+      {/* Overview Tab */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6">
+          {/* KPIs principaux */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-[#6366f1]/20 rounded-lg">
+                  <Droplets className="w-6 h-6 text-[#6366f1]" />
+                </div>
+                <span className="text-[#10b981] text-sm">+3.2%</span>
+              </div>
+              <h3 className="text-2xl font-bold">147%</h3>
+              <p className="text-[#94a3b8]">LCR Ratio</p>
+              <div className="mt-2 text-xs text-[#10b981]">Above 100% requirement</div>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-[#8b5cf6]/20 rounded-lg">
+                  <Shield className="w-6 h-6 text-[#8b5cf6]" />
+                </div>
+                <span className="text-[#10b981] text-sm">+2.1%</span>
+              </div>
+              <h3 className="text-2xl font-bold">117%</h3>
+              <p className="text-[#94a3b8]">NSFR Ratio</p>
+              <div className="mt-2 text-xs text-[#10b981]">Stable funding secured</div>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-[#10b981]/20 rounded-lg">
+                  <BarChart3 className="w-6 h-6 text-[#10b981]" />
+                </div>
+                <span className="text-[#f59e0b] text-sm">90 days</span>
+              </div>
+              <h3 className="text-2xl font-bold">€150M</h3>
+              <p className="text-[#94a3b8]">HQLA Buffer</p>
+              <div className="mt-2 text-xs text-[#64748b]">Survival horizon: 90 days</div>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-[#f59e0b]/20 rounded-lg">
+                  <Activity className="w-6 h-6 text-[#f59e0b]" />
+                </div>
+                <span className="text-[#ef4444] text-sm">+25bps</span>
+              </div>
+              <h3 className="text-2xl font-bold">3.8%</h3>
+              <p className="text-[#94a3b8]">Funding Cost</p>
+              <div className="mt-2 text-xs text-[#ef4444]">Rate pressure increasing</div>
+            </div>
+          </div>
+
+          {/* Graphiques principaux */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Regulatory Ratios Trend</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={lcrData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="date" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                    labelStyle={{ color: '#94a3b8' }}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="lcr" stroke="#3b82f6" name="LCR" strokeWidth={2} />
+                  <Line type="monotone" dataKey="nsfr" stroke="#8b5cf6" name="NSFR" strokeWidth={2} />
+                  <Line type="monotone" dataKey="required" stroke="#ef4444" name="Min Required" strokeDasharray="5 5" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">HQLA Composition</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={hqlaComposition}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {hqlaComposition.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                    labelStyle={{ color: '#94a3b8' }}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Funding Sources */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Funding Sources & Stability</h3>
+            <div className="space-y-3">
+              {fundingSources.map((source) => (
+                <div key={source.source} className="flex items-center gap-4">
+                  <div className="w-32 text-sm text-[#94a3b8]">{source.source}</div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-sm">€{source.amount}M ({source.percentage}%)</span>
+                      <span className="text-xs text-[#64748b]">Stability: {source.stability}%</span>
+                    </div>
+                    <div className="w-full bg-[#334155] rounded-full h-2">
+                      <div 
+                        className="h-2 rounded-full transition-all duration-300"
+                        style={{ 
+                          width: source.percentage + '%',
+                          backgroundColor: source.stability > 80 ? '#10b981' : source.stability > 60 ? '#f59e0b' : '#ef4444'
+                        }}
+                      />
+                    </div>
                   </div>
-                  <p className={`text-xs mb-3 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                    {metric.fullName}
-                  </p>
-                  <p className="text-2xl font-bold mb-2">
-                    {typeof metric.value === 'number' ? `${metric.value}%` : metric.value}
-                  </p>
-                  <p className={`text-sm ${metric.trend > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {metric.trend > 0 ? '+' : ''}{metric.trend}%
-                  </p>
-                  {metric.minimum && (
-                    <p className={`text-xs mt-2 ${darkMode ? 'text-gray-500' : 'text-gray-500'}`}>
-                      Min: {metric.minimum}%
-                    </p>
-                  )}
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Buffer de liquidité et concentration */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Composition du buffer */}
-              <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Composition du Buffer de Liquidité (€8.2B)
-                </h3>
-                <div className="space-y-4">
-                  {bufferComposition.map((item, index) => (
-                    <div key={index}>
-                      <div className="flex justify-between mb-1">
-                        <span className={darkMode ? 'text-gray-300' : 'text-gray-700'}>
-                          {item.type}
-                        </span>
-                        <span className={`font-semibold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          €{item.amount}B ({item.percentage}%)
-                        </span>
-                      </div>
-                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full transition-all duration-300"
-                          style={{ 
-                            width: `${item.percentage}%`,
-                            backgroundColor: colors[index]
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      {/* Liquidity Dashboard Tab */}
+      {activeTab === 'liquidity-dashboard' && (
+        <div className="space-y-6">
+          {/* Maturity Ladder */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Maturity Ladder</h3>
+              <div className="flex items-center gap-2 text-sm text-[#94a3b8]">
+                <Clock className="w-4 h-4" />
+                As of today, 9:00 AM
               </div>
+            </div>
+            <ResponsiveContainer width="100%" height={350}>
+              <ComposedChart data={maturityLadder}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="bucket" stroke="#94a3b8" angle={-45} textAnchor="end" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                  labelStyle={{ color: '#94a3b8' }}
+                />
+                <Legend />
+                <Bar dataKey="assets" fill="#10b981" name="Assets" />
+                <Bar dataKey="liabilities" fill="#ef4444" name="Liabilities" />
+                <Line type="monotone" dataKey="cumGap" stroke="#f59e0b" name="Cumulative Gap" strokeWidth={3} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
 
-              {/* Concentration des financements */}
-              <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Sources de Financement
-                </h3>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={fundingConcentration}>
-                      <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
-                      <XAxis dataKey="source" angle={-45} textAnchor="end" height={70} stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                      <YAxis stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                          border: 'none',
-                          borderRadius: '0.5rem'
-                        }}
-                      />
-                      <Legend />
-                      <Bar dataKey="amount" fill="#3B82F6" name="Montant (%)" />
-                      <Line type="monotone" dataKey="stable" stroke="#10B981" strokeWidth={2} name="Stabilité (%)" />
-                    </ComposedChart>
-                  </ResponsiveContainer>
+          {/* Liquidity Metrics Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h4 className="text-sm font-medium text-[#94a3b8] mb-4">Intraday Liquidity</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Opening Balance</span>
+                  <span className="font-medium">€2.5B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Current Position</span>
+                  <span className="font-medium text-[#10b981]">€2.8B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Available Credit Lines</span>
+                  <span className="font-medium">€1.2B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Projected EOD</span>
+                  <span className="font-medium">€2.6B</span>
                 </div>
               </div>
             </div>
-          </>
-        )}
 
-        {selectedView === 'gap' && (
-          <>
-            {/* Gap Analysis */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm mb-8`}>
-              <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Gap Analysis par Maturité (€B)
-              </h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={gapAnalysis}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
-                    <XAxis dataKey="maturity" stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <YAxis stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '0.5rem'
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="assets" fill="#10B981" name="Actifs" />
-                    <Bar dataKey="liabilities" fill="#EF4444" name="Passifs" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Métriques de duration */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <h4 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Duration Gap
-                </h4>
-                <p className="text-3xl font-bold text-indigo-500">0.8 ans</p>
-                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Actifs: 3.2 ans | Passifs: 2.4 ans
-                </p>
-              </div>
-
-              <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <h4 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  Convexity
-                </h4>
-                <p className="text-3xl font-bold text-purple-500">12.5</p>
-                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Sensibilité aux mouvements de taux
-                </p>
-              </div>
-
-              <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-                <h4 className={`font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  EVE Sensitivity
-                </h4>
-                <p className="text-3xl font-bold text-green-500">-3.2%</p>
-                <p className={`text-sm mt-2 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                  Impact +200bps sur valeur économique
-                </p>
-              </div>
-            </div>
-          </>
-        )}
-
-        {selectedView === 'rates' && (
-          <>
-            {/* Courbe de taux */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm mb-8`}>
-              <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Courbe de Taux
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={yieldCurve}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
-                    <XAxis dataKey="maturity" stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <YAxis domain={[3.5, 4.5]} stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '0.5rem'
-                      }}
-                    />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="current" 
-                      stroke="#3B82F6" 
-                      strokeWidth={3}
-                      name="Actuel"
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="previous" 
-                      stroke="#9CA3AF" 
-                      strokeWidth={2}
-                      strokeDasharray="5 5"
-                      name="Précédent"
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* Impact sur NII */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-              <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Sensibilité du NII aux Taux
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                  <h4 className="font-semibold mb-2">-100bps</h4>
-                  <p className="text-2xl font-bold text-red-500">-€125M</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    -5.2% sur NII annuel
-                  </p>
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h4 className="text-sm font-medium text-[#94a3b8] mb-4">Concentration Risk</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Top 10 Depositors</span>
+                  <span className="font-medium text-[#f59e0b]">28%</span>
                 </div>
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                  <h4 className="font-semibold mb-2">-50bps</h4>
-                  <p className="text-2xl font-bold text-yellow-500">-€62M</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    -2.6% sur NII annuel
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Top 20 Depositors</span>
+                  <span className="font-medium">42%</span>
                 </div>
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                  <h4 className="font-semibold mb-2">+50bps</h4>
-                  <p className="text-2xl font-bold text-green-500">+€58M</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    +2.4% sur NII annuel
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Largest Single</span>
+                  <span className="font-medium">5.2%</span>
                 </div>
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-gray-700' : 'bg-gray-50'}`}>
-                  <h4 className="font-semibold mb-2">+100bps</h4>
-                  <p className="text-2xl font-bold text-green-600">+€115M</p>
-                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                    +4.8% sur NII annuel
-                  </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">HHI Index</span>
+                  <span className="font-medium">0.082</span>
                 </div>
               </div>
             </div>
-          </>
-        )}
 
-        {selectedView === 'stress' && (
-          <>
-            {/* Stress test liquidité */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm mb-8`}>
-              <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Stress Test Liquidité
-              </h3>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={liquidityStress}>
-                    <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
-                    <XAxis dataKey="scenario" stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <YAxis stroke={darkMode ? '#9CA3AF' : '#6B7280'} />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '0.5rem'
-                      }}
-                    />
-                    <Legend />
-                    <Bar dataKey="lcr" fill="#3B82F6" name="LCR (%)" />
-                    <Bar dataKey="nsfr" fill="#10B981" name="NSFR (%)" />
-                  </BarChart>
-                </ResponsiveContainer>
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h4 className="text-sm font-medium text-[#94a3b8] mb-4">Contingency Funding</h4>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">ECB Eligible</span>
+                  <span className="font-medium text-[#10b981]">€4.2B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Unencumbered</span>
+                  <span className="font-medium">€2.8B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Repo Eligible</span>
+                  <span className="font-medium">€3.5B</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm">Total Available</span>
+                  <span className="font-medium text-[#6366f1]">€10.5B</span>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Actions de contingence */}
-            <div className={`p-6 rounded-xl ${darkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm`}>
-              <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Plan de Contingence Liquidité
-              </h3>
+          {/* Early Warning Indicators */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Early Warning Indicators</h3>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="p-4 rounded-lg bg-[#334155]/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-[#94a3b8]">Deposit Outflow</span>
+                  <ArrowDownRight className="w-4 h-4 text-[#f59e0b]" />
+                </div>
+                <p className="text-xl font-bold">-2.3%</p>
+                <div className="mt-2 h-1 bg-[#475569] rounded">
+                  <div className="h-1 bg-[#f59e0b] rounded" style={{ width: '60%' }}></div>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-[#334155]/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-[#94a3b8]">Market Access</span>
+                  <Activity className="w-4 h-4 text-[#10b981]" />
+                </div>
+                <p className="text-xl font-bold">Normal</p>
+                <div className="mt-2 h-1 bg-[#475569] rounded">
+                  <div className="h-1 bg-[#10b981] rounded" style={{ width: '90%' }}></div>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-[#334155]/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-[#94a3b8]">Funding Spread</span>
+                  <TrendingUp className="w-4 h-4 text-[#f59e0b]" />
+                </div>
+                <p className="text-xl font-bold">+15bps</p>
+                <div className="mt-2 h-1 bg-[#475569] rounded">
+                  <div className="h-1 bg-[#f59e0b] rounded" style={{ width: '70%' }}></div>
+                </div>
+              </div>
+              <div className="p-4 rounded-lg bg-[#334155]/50">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm text-[#94a3b8]">Counterparty Lines</span>
+                  <Shield className="w-4 h-4 text-[#10b981]" />
+                </div>
+                <p className="text-xl font-bold">98%</p>
+                <div className="mt-2 h-1 bg-[#475569] rounded">
+                  <div className="h-1 bg-[#10b981] rounded" style={{ width: '98%' }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stress Testing Tab */}
+      {activeTab === 'stress-testing' && (
+        <div className="space-y-6">
+          {/* Scenario Selector */}
+          <div className="bg-[#1e293b] rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <AlertTriangle className="w-5 h-5 text-[#f59e0b]" />
+                <h3 className="text-lg font-semibold">Liquidity Stress Test Scenarios</h3>
+              </div>
+              <select
+                value={selectedScenario}
+                onChange={(e) => setSelectedScenario(e.target.value)}
+                className="bg-[#334155] border border-[#475569] rounded px-4 py-2"
+              >
+                <option value="baseline">Baseline</option>
+                <option value="idiosyncratic">Idiosyncratic Crisis</option>
+                <option value="market-wide">Market-wide Crisis</option>
+                <option value="combined">Combined Crisis</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Stress Test Results */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Scenario Impact on Ratios</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <RadarChart data={stressScenarios}>
+                  <PolarGrid stroke="#334155" />
+                  <PolarAngleAxis dataKey="scenario" stroke="#94a3b8" />
+                  <PolarRadiusAxis angle={90} domain={[0, 150]} stroke="#94a3b8" />
+                  <Radar name="LCR" dataKey="lcr" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
+                  <Radar name="NSFR" dataKey="nsfr" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
+                  <Legend />
+                </RadarChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Survival Period Analysis</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={stressScenarios}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="scenario" stroke="#94a3b8" angle={-45} textAnchor="end" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                    labelStyle={{ color: '#94a3b8' }}
+                  />
+                  <Bar dataKey="survivalDays" fill="#10b981" name="Survival Days">
+                    {stressScenarios.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={
+                        entry.survivalDays > 60 ? '#10b981' : 
+                        entry.survivalDays > 30 ? '#f59e0b' : '#ef4444'
+                      } />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Mitigation Actions */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Contingency Funding Plan - Actions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 bg-[#6366f1]/10 border border-[#6366f1]/20 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <Target className="w-8 h-8 text-[#6366f1]" />
+                  <div>
+                    <h4 className="font-semibold">Immediate Actions</h4>
+                    <p className="text-sm text-[#94a3b8]">0-5 days</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#6366f1] mt-1">•</span>
+                    <span>Activate ECB eligible collateral (€4.2B)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#6366f1] mt-1">•</span>
+                    <span>Draw on committed credit lines (€1.2B)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#6366f1] mt-1">•</span>
+                    <span>Suspend dividend payments</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-[#f59e0b]/10 border border-[#f59e0b]/20 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <Shield className="w-8 h-8 text-[#f59e0b]" />
+                  <div>
+                    <h4 className="font-semibold">Secondary Actions</h4>
+                    <p className="text-sm text-[#94a3b8]">5-30 days</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] mt-1">•</span>
+                    <span>Asset sales program (€2.5B target)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] mt-1">•</span>
+                    <span>Reduce loan origination by 50%</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#f59e0b] mt-1">•</span>
+                    <span>Negotiate term deposit extensions</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="p-4 bg-[#ef4444]/10 border border-[#ef4444]/20 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <AlertTriangle className="w-8 h-8 text-[#ef4444]" />
+                  <div>
+                    <h4 className="font-semibold">Crisis Actions</h4>
+                    <p className="text-sm text-[#94a3b8]">30+ days</p>
+                  </div>
+                </div>
+                <ul className="space-y-2 text-sm">
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ef4444] mt-1">•</span>
+                    <span>Request emergency liquidity assistance</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ef4444] mt-1">•</span>
+                    <span>Portfolio divestiture (€5B+)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-[#ef4444] mt-1">•</span>
+                    <span>Consider M&A options</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          {/* Cash Flow Projections */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">30-Day Cash Flow Projection (Stress Scenario)</h3>
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={[
+                { day: 'D+1', inflow: 100, outflow: -150, net: -50, cumulative: -50 },
+                { day: 'D+5', inflow: 120, outflow: -180, net: -60, cumulative: -110 },
+                { day: 'D+10', inflow: 150, outflow: -160, net: -10, cumulative: -120 },
+                { day: 'D+15', inflow: 180, outflow: -170, net: 10, cumulative: -110 },
+                { day: 'D+20', inflow: 200, outflow: -180, net: 20, cumulative: -90 },
+                { day: 'D+25', inflow: 220, outflow: -190, net: 30, cumulative: -60 },
+                { day: 'D+30', inflow: 240, outflow: -200, net: 40, cumulative: -20 }
+              ]}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="day" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                  labelStyle={{ color: '#94a3b8' }}
+                />
+                <Legend />
+                <Area type="monotone" dataKey="inflow" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
+                <Area type="monotone" dataKey="outflow" stackId="1" stroke="#ef4444" fill="#ef4444" fillOpacity={0.6} />
+                <Line type="monotone" dataKey="cumulative" stroke="#f59e0b" strokeWidth={3} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
+
+      {/* ALM Analytics Tab */}
+      {activeTab === 'alm-analytics' && (
+        <div className="space-y-6">
+          {/* Gap Analysis */}
+          <div className="bg-[#1e293b] rounded-lg p-6">
+            <h3 className="text-lg font-semibold mb-4">Interest Rate Gap Analysis</h3>
+            <ResponsiveContainer width="100%" height={350}>
+              <ComposedChart data={almGapData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis dataKey="maturity" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                  labelStyle={{ color: '#94a3b8' }}
+                />
+                <Legend />
+                <Bar dataKey="assets" fill="#10b981" name="Rate Sensitive Assets" />
+                <Bar dataKey="liabilities" fill="#ef4444" name="Rate Sensitive Liabilities" />
+                <Line type="monotone" dataKey="gap" stroke="#f59e0b" name="Gap" strokeWidth={3} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </div>
+
+          {/* Duration & Sensitivity Analysis */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Duration Analysis</h3>
               <div className="space-y-4">
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-green-900/20' : 'bg-green-50'}`}>
-                  <h4 className="font-semibold text-green-600 dark:text-green-400 mb-2">
-                    Niveau 1 - Surveillance renforcée
-                  </h4>
-                  <ul className={`text-sm space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    <li>• Monitoring quotidien des ratios</li>
-                    <li>• Activation ligne BCE de €5B</li>
-                    <li>• Réduction prêts interbancaires</li>
-                  </ul>
+                <div className="p-4 bg-[#334155] rounded-lg">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm text-[#94a3b8]">Asset Duration</span>
+                    <span className="text-xl font-bold">{durationGap.assets} years</span>
+                  </div>
+                  <div className="w-full bg-[#475569] rounded-full h-2">
+                    <div className="bg-[#6366f1] h-2 rounded-full" style={{ width: '64%' }}></div>
+                  </div>
                 </div>
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-yellow-900/20' : 'bg-yellow-50'}`}>
-                  <h4 className="font-semibold text-yellow-600 dark:text-yellow-400 mb-2">
-                    Niveau 2 - Actions préventives
-                  </h4>
-                  <ul className={`text-sm space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    <li>• Vente d'actifs liquides (€3B)</li>
-                    <li>• Activation swaps devises</li>
-                    <li>• Suspension dividendes</li>
-                  </ul>
+                <div className="p-4 bg-[#334155] rounded-lg">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm text-[#94a3b8]">Liability Duration</span>
+                    <span className="text-xl font-bold">{durationGap.liabilities} years</span>
+                  </div>
+                  <div className="w-full bg-[#475569] rounded-full h-2">
+                    <div className="bg-[#ef4444] h-2 rounded-full" style={{ width: '56%' }}></div>
+                  </div>
                 </div>
-                <div className={`p-4 rounded-lg ${darkMode ? 'bg-red-900/20' : 'bg-red-50'}`}>
-                  <h4 className="font-semibold text-red-600 dark:text-red-400 mb-2">
-                    Niveau 3 - Crise de liquidité
-                  </h4>
-                  <ul className={`text-sm space-y-1 ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                    <li>• Activation totale lignes backup (€15B)</li>
-                    <li>• Titrisation d'urgence portefeuille</li>
-                    <li>• Support banque centrale</li>
-                  </ul>
+                <div className="p-4 bg-[#334155] rounded-lg">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-sm text-[#94a3b8]">Duration Gap</span>
+                    <span className="text-xl font-bold text-[#f59e0b]">{durationGap.gap} years</span>
+                  </div>
+                  <div className="w-full bg-[#475569] rounded-full h-2">
+                    <div className="bg-[#f59e0b] h-2 rounded-full" style={{ width: '8%' }}></div>
+                  </div>
+                </div>
+                <div className="p-4 bg-[#6366f1]/10 border border-[#6366f1]/20 rounded-lg">
+                  <p className="text-sm">
+                    <span className="font-semibold">EVE Impact:</span> A 100bp rate increase would result in 
+                    approximately €{(durationGap.gap * 1000 * 0.01).toFixed(1)}M loss in economic value
+                  </p>
                 </div>
               </div>
             </div>
-          </>
-        )}
-      </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">NII Sensitivity</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={[
+                  { scenario: '-200bp', impact: -85 },
+                  { scenario: '-100bp', impact: -42 },
+                  { scenario: '-50bp', impact: -20 },
+                  { scenario: 'Base', impact: 0 },
+                  { scenario: '+50bp', impact: 18 },
+                  { scenario: '+100bp', impact: 35 },
+                  { scenario: '+200bp', impact: 65 }
+                ]}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                  <XAxis dataKey="scenario" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid #334155' }}
+                    labelStyle={{ color: '#94a3b8' }}
+                    formatter={(value) => `€${value}M`}
+                  />
+                  <Bar dataKey="impact" name="NII Impact (€M)">
+                    {[
+                      { scenario: '-200bp', impact: -85 },
+                      { scenario: '-100bp', impact: -42 },
+                      { scenario: '-50bp', impact: -20 },
+                      { scenario: 'Base', impact: 0 },
+                      { scenario: '+50bp', impact: 18 },
+                      { scenario: '+100bp', impact: 35 },
+                      { scenario: '+200bp', impact: 65 }
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.impact >= 0 ? '#10b981' : '#ef4444'} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Hedging Strategy */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Current Hedges</h3>
+              <div className="space-y-3">
+                <div className="p-3 bg-[#334155]/50 rounded">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm">Interest Rate Swaps</span>
+                    <span className="font-medium">€2.5B</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">Avg maturity: 3.2 years</p>
+                </div>
+                <div className="p-3 bg-[#334155]/50 rounded">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm">FX Forwards</span>
+                    <span className="font-medium">€850M</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">USD/EUR protection</p>
+                </div>
+                <div className="p-3 bg-[#334155]/50 rounded">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm">Options</span>
+                    <span className="font-medium">€320M</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">Rate caps & floors</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Hedge Effectiveness</h3>
+              <div className="space-y-4">
+                <div className="text-center mb-4">
+                  <div className="text-3xl font-bold text-[#10b981]">87%</div>
+                  <p className="text-sm text-[#94a3b8] mt-1">Overall Effectiveness</p>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Interest Rate Risk</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-[#475569] rounded-full h-1.5">
+                        <div className="bg-[#10b981] h-1.5 rounded-full" style={{ width: '92%' }}></div>
+                      </div>
+                      <span className="text-xs">92%</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>FX Risk</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-[#475569] rounded-full h-1.5">
+                        <div className="bg-[#6366f1] h-1.5 rounded-full" style={{ width: '85%' }}></div>
+                      </div>
+                      <span className="text-xs">85%</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span>Basis Risk</span>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 bg-[#475569] rounded-full h-1.5">
+                        <div className="bg-[#f59e0b] h-1.5 rounded-full" style={{ width: '78%' }}></div>
+                      </div>
+                      <span className="text-xs">78%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#1e293b] rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Key Risk Indicators</h3>
+              <div className="space-y-3">
+                <div className="p-3 bg-[#10b981]/10 border border-[#10b981]/20 rounded">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm">EVE Sensitivity</span>
+                    <span className="text-[#10b981] font-medium">4.2%</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">Within 6% limit</p>
+                </div>
+                <div className="p-3 bg-[#f59e0b]/10 border border-[#f59e0b]/20 rounded">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm">NII at Risk</span>
+                    <span className="text-[#f59e0b] font-medium">€45M</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">12 months, 95% VaR</p>
+                </div>
+                <div className="p-3 bg-[#6366f1]/10 border border-[#6366f1]/20 rounded">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm">Basis Risk</span>
+                    <span className="text-[#6366f1] font-medium">€12M</span>
+                  </div>
+                  <p className="text-xs text-[#94a3b8]">Euribor vs Fixed</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
