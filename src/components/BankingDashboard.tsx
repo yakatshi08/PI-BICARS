@@ -186,6 +186,14 @@ export const BankingDashboard: React.FC = () => {
               <Shield className="h-4 w-4" />
               Credit Risk
             </button>
+            {/* Nouveau bouton Market Risk ajouté ici */}
+            <button
+              onClick={() => navigate('/market-risk')}
+              className="px-4 py-2 bg-[#ef4444] text-white rounded-lg hover:bg-[#dc2626] transition-colors flex items-center gap-2"
+            >
+              <TrendingUp className="w-4 h-4" />
+              Market Risk
+            </button>
           </div>
         </div>
 

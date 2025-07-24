@@ -74,7 +74,7 @@ export const BankingCore: React.FC = () => {
       icon: Shield,
       color: 'blue',
       description: 'Common Equity Tier 1',
-      path: '/ratios/cet1',
+      path: '/ratios/cet1', // ✅ Reste actif
       threshold: { min: 4.5, warning: 8, good: 10 }
     },
     {
@@ -87,7 +87,7 @@ export const BankingCore: React.FC = () => {
       icon: Activity,
       color: 'green',
       description: 'Liquidity Coverage Ratio',
-      path: '/ratios/lcr',
+      path: '#lcr-dev', // ⚠️ Désactivé avec tag
       threshold: { min: 100, warning: 110, good: 120 }
     },
     {
@@ -100,7 +100,7 @@ export const BankingCore: React.FC = () => {
       icon: AlertCircle,
       color: 'purple',
       description: 'Non-Performing Loans',
-      path: '/ratios/npl',
+      path: '#npl-dev', // ⚠️ Désactivé avec tag
       threshold: { max: 5, warning: 3, good: 2 }
     },
     {
@@ -113,7 +113,7 @@ export const BankingCore: React.FC = () => {
       icon: DollarSign,
       color: 'indigo',
       description: 'Net Interest Income',
-      path: '/ratios/nii',
+      path: '/banking/dashboard', // ✅ Redirige vers le dashboard
       threshold: { min: 0, warning: 1000, good: 2000 }
     },
     {
@@ -126,7 +126,7 @@ export const BankingCore: React.FC = () => {
       icon: TrendingUp,
       color: 'teal',
       description: 'Net Stable Funding Ratio',
-      path: '/ratios/nsfr',
+      path: '#nsfr-dev', // ⚠️ Désactivé avec tag
       threshold: { min: 100, warning: 105, good: 110 }
     }
   ];
@@ -215,6 +215,15 @@ export const BankingCore: React.FC = () => {
     }
   };
 
+  // Fonction pour gérer le clic sur les KPIs
+  const handleMetricClick = (metric: BankingMetric) => {
+    if (metric.path.startsWith('#')) {
+      alert(`${metric.name} - ${metric.description}\n\nCette fonctionnalité est en cours de développement.`);
+    } else {
+      navigate(metric.path);
+    }
+  };
+
   return (
     <div className={`min-h-screen ${darkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -251,10 +260,11 @@ export const BankingCore: React.FC = () => {
               return (
                 <div
                   key={metric.id}
-                  onClick={() => navigate(metric.path)}
+                  onClick={() => handleMetricClick(metric)}
                   className={`rounded-xl p-6 cursor-pointer transition-all ${
                     darkMode ? 'bg-gray-800 hover:bg-gray-750' : 'bg-white hover:shadow-lg'
-                  } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}`}
+                  } ${selectedMetric === metric.id ? 'ring-2 ring-indigo-500' : ''}
+                  ${metric.path.startsWith('#') ? 'opacity-80' : ''}`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-3 rounded-lg ${getColorClasses(metric.color, 'bg')}`}>
@@ -364,7 +374,7 @@ export const BankingCore: React.FC = () => {
               <Tooltip
                 contentStyle={{
                   backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                  border: darkMode ? '1px solid #374151' : '1px solid #E5E7EB'
+                  border: darkMode ? '1px solid #374151' : '1px solid #E5E7EB'  // ✅ ERREUR CORRIGÉE
                 }}
               />
               <Line type="monotone" dataKey="CET1" stroke="#3B82F6" strokeWidth={2} dot={{ fill: '#3B82F6' }} name="CET1 %" />

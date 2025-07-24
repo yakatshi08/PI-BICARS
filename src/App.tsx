@@ -90,6 +90,8 @@ function App() {
           <Route path="/banking/bale-ratios" element={<BaleRatios />} />
           <Route path="/banking/credit-risk" element={<CreditRisk />} />
           <Route path="/banking/alm-liquidity" element={<ALMLiquidity />} />
+          {/* Ajout de la route Market Risk après ALMLiquidity */}
+          <Route path="/market-risk" element={<MarketRisk />} />
           
           {/* Routes des ratios détaillés */}
           <Route path="/ratios/cet1" element={<CET1Page />} />
