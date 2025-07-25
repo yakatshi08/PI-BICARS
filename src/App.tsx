@@ -13,8 +13,12 @@ import { Dashboard } from './components/Dashboard';
 import { DataImport } from './components/DataImport';
 import { Header } from './components/Header';
 import { InsuranceCore } from './components/InsuranceCore';
+import { InsuranceDashboard } from './components/InsuranceDashboard'; // AJOUT IMPORT
 import { Settings } from './components/Settings';
 import { BankingSimulation } from './components/BankingSimulation';
+import { ImportIntelligentAdvanced } from './components/ImportIntelligentAdvanced'; // Ajouté
+import { InsuranceSCRDetail } from './components/InsuranceSCRDetail'; // AJOUT IMPORT
+import { InsuranceRiskAnalysis } from './components/InsuranceRiskAnalysis'; // AJOUT IMPORT
 
 // Imports par défaut (sans accolades)
 import Analyses from './components/Analyses';
@@ -112,7 +116,13 @@ function App() {
           <Route path="/insurance-core" element={<Navigate to="/insurance" replace />} />
           <Route path="/insurance/claims" element={<ClaimsUnderwriting />} />
           <Route path="/insurance/actuarial" element={<ActuarialAnalytics />} />
+          
+          {/* ROUTE MODIFIÉE - Ancien placeholder remplacé par le vrai composant */}
+          <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
+          
           <Route path="/insurance/scr-details" element={<InsurancePlaceholder title="SCR Coverage - Détails" />} />
+          <Route path="/insurance/scr-detail" element={<InsuranceSCRDetail />} /> {/* AJOUT DE LA ROUTE */}
+          <Route path="/insurance/risk-analysis" element={<InsuranceRiskAnalysis />} /> {/* AJOUT DE LA ROUTE */}
           <Route path="/insurance/combined-ratio" element={<InsurancePlaceholder title="Combined Ratio - Analyse" />} />
           <Route path="/insurance/loss-ratio-details" element={<InsurancePlaceholder title="Loss Ratio - Détails" />} />
           <Route path="/insurance/solvency-module" element={<InsurancePlaceholder title="Module Solvency II" />} />
@@ -129,6 +139,9 @@ function App() {
           <Route path="/data-import" element={<DataImport />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/settings" element={<Settings />} />
+          
+          {/* Nouvelle route pour l'import avancé */}
+          <Route path="/import-advanced" element={<ImportIntelligentAdvanced />} />
           
           {/* Route 404 - Doit être la dernière */}
           <Route path="*" element={<Navigate to="/" replace />} />

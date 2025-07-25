@@ -4,7 +4,8 @@ import {
   BarChart3, FileText, Zap, Users,
   ChartBar, PieChart, LineChart, Target,
   Activity, AlertCircle, Cpu, Database,
-  GitBranch, Settings, PlayCircle, CheckCircle
+  GitBranch, Settings, PlayCircle, CheckCircle,
+  Upload // Icône ajoutée
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
@@ -451,6 +452,18 @@ const Dashboard = () => {
               </div>
             );
           })}
+
+          {/* Ajout du bouton Import Intelligent */}
+          <div 
+            onClick={() => navigate('/import-advanced')}
+            className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl p-6 cursor-pointer hover:shadow-xl transition-all flex flex-col justify-between"
+          >
+            <div>
+              <Upload className="h-8 w-8 text-white mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">Import Intelligent</h3>
+              <p className="text-purple-100">OCR PDF & APIs temps réel</p>
+            </div>
+          </div>
         </div>
 
         {/* CTA Section */}

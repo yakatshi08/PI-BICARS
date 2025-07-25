@@ -1,12 +1,13 @@
 // Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\components\Header.tsx
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Ajout de useNavigate
 import { Bell, Settings, Moon, Sun, Globe, Brain, ChevronDown } from 'lucide-react';
 import { useStore } from '../store';
 
 export const Header: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate(); // Hook pour la navigation
   const { darkMode, toggleDarkMode, language, setLanguage } = useStore();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -24,6 +25,9 @@ export const Header: React.FC = () => {
     { code: 'es', label: 'ES', flag: '🇪🇸' },
     { code: 'de', label: 'DE', flag: '🇩🇪' },
   ];
+
+  // Détermine le module actif pour la coloration
+  const activeModule = location.pathname.split('/')[1];
 
   return (
     <header className={`${darkMode ? 'bg-gray-900 border-gray-800' : 'bg-white border-gray-200'} border-b sticky top-0 z-40 transition-colors duration-200`}>
@@ -76,20 +80,19 @@ export const Header: React.FC = () => {
               Bancaire
             </Link>
 
-            <Link
-              to="/insurance"
-              className={`px-4 sm:px-5 py-2.5 rounded-lg font-medium transition-all
-                ${location.pathname.includes('/insurance')
-                  ? darkMode 
-                    ? 'bg-indigo-600 text-white shadow-md' 
-                    : 'bg-indigo-600 text-white shadow-md'
+            {/* MODIFICATION APPLIQUÉE ICI */}
+            <button
+              onClick={() => navigate('/insurance/dashboard')}
+              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+                activeModule === 'insurance'
+                  ? 'bg-purple-600 text-white'
                   : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-800'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                  ? 'text-gray-300 hover:text-white'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
             >
               Assurance
-            </Link>
+            </button>
 
             {/* Co-Pilot avec style amélioré */}
             <Link

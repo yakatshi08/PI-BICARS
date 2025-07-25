@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   FileText, Download, Check, AlertCircle, Calendar,
   Building2, Clock, FileSpreadsheet, Send, Eye,
-  CheckCircle, XCircle, Info, Shield, Activity, TrendingUp
+  CheckCircle, XCircle, Info, Shield, Activity, TrendingUp, X
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +25,15 @@ interface ValidationResult {
   messages: string[];
 }
 
+// Données simulées pour l'export
+interface COREPData {
+  [key: string]: {
+    value: number;
+    currency: string;
+    description: string;
+  }[];
+}
+
 export const BankingCOREPExport: React.FC = () => {
   const navigate = useNavigate();
   
@@ -35,6 +44,8 @@ export const BankingCOREPExport: React.FC = () => {
   const [exporting, setExporting] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [validationResults, setValidationResults] = useState<ValidationResult[]>([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<any>(null);
 
   // Templates COREP standards
   const corepTemplates: COREPTemplate[] = [
@@ -140,6 +151,50 @@ export const BankingCOREPExport: React.FC = () => {
     }
   ];
 
+  // Données simulées pour les templates
+  const getTemplateData = (templateId: string): COREPData => {
+    const dataMap: { [key: string]: COREPData } = {
+      'ca1': {
+        'C_01.00': [
+          { value: 125000000, currency: 'EUR', description: 'Common Equity Tier 1 capital' },
+          { value: 15000000, currency: 'EUR', description: 'Additional Tier 1 capital' },
+          { value: 25000000, currency: 'EUR', description: 'Tier 2 capital' },
+          { value: 165000000, currency: 'EUR', description: 'Total capital' }
+        ]
+      },
+      'ca2': {
+        'C_02.00': [
+          { value: 850000000, currency: 'EUR', description: 'Risk weighted exposure amounts' },
+          { value: 68000000, currency: 'EUR', description: 'Own funds requirements' },
+          { value: 97000000, currency: 'EUR', description: 'Capital surplus' }
+        ]
+      },
+      'ca3': {
+        'C_03.00': [
+          { value: 14.7, currency: '%', description: 'CET1 capital ratio' },
+          { value: 16.5, currency: '%', description: 'T1 capital ratio' },
+          { value: 19.4, currency: '%', description: 'Total capital ratio' }
+        ]
+      },
+      'lc1': {
+        'C_72.00': [
+          { value: 142, currency: '%', description: 'Liquidity Coverage Ratio' },
+          { value: 1250000000, currency: 'EUR', description: 'Liquid assets' },
+          { value: 880000000, currency: 'EUR', description: 'Net cash outflows' }
+        ]
+      },
+      'lv1': {
+        'C_47.00': [
+          { value: 5.2, currency: '%', description: 'Leverage ratio' },
+          { value: 165000000, currency: 'EUR', description: 'Tier 1 capital' },
+          { value: 3173000000, currency: 'EUR', description: 'Total leverage ratio exposure' }
+        ]
+      }
+    };
+
+    return dataMap[templateId] || { 'No data': [{ value: 0, currency: 'EUR', description: 'No data available' }] };
+  };
+
   // Grouper par catégorie
   const templatesByCategory = corepTemplates.reduce((acc, template) => {
     if (!acc[template.category]) {
@@ -202,21 +257,112 @@ export const BankingCOREPExport: React.FC = () => {
     }, 2000);
   };
 
-  // Générer l'export
+  // Générer le contenu XML pour XBRL
+  const generateXBRLContent = () => {
+    const selectedTemplateObjects = selectedTemplates
+      .map(id => corepTemplates.find(t => t.id === id))
+      .filter(Boolean) as COREPTemplate[];
+
+    let xmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<xbrl xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:link="http://www.xbrl.org/2003/linkbase"
+      xmlns:corep="http://www.eba.europa.eu/xbrl/crr/dict/dom"
+      xmlns:iso4217="http://www.xbrl.org/2003/iso4217">
+  
+  <context id="c1">
+    <entity>
+      <identifier scheme="http://www.eba.europa.eu/xbrl">PI_BICARS_BANK</identifier>
+    </entity>
+    <period>
+      <instant>${reportingDate}</instant>
+    </period>
+  </context>
+  
+  <unit id="EUR">
+    <measure>iso4217:EUR</measure>
+  </unit>
+  
+  <unit id="percent">
+    <measure>xbrli:pure</measure>
+  </unit>\n\n`;
+
+    // Ajouter les données pour chaque template sélectionné
+    selectedTemplateObjects.forEach(template => {
+      const data = getTemplateData(template.id);
+      xmlContent += `  <!-- ${template.code} - ${template.name} -->\n`;
+      
+      Object.entries(data).forEach(([section, values]) => {
+        values.forEach((item, index) => {
+          const unitRef = item.currency === '%' ? 'percent' : item.currency;
+          xmlContent += `  <corep:${template.code.replace(/\s/g, '_')}_${index + 1} 
+    contextRef="c1" 
+    unitRef="${unitRef}" 
+    decimals="${item.currency === '%' ? '2' : '0'}">${item.value}</corep:${template.code.replace(/\s/g, '_')}_${index + 1}>
+    <!-- ${item.description} -->\n`;
+        });
+      });
+      xmlContent += '\n';
+    });
+
+    xmlContent += '</xbrl>';
+    return xmlContent;
+  };
+
+  // Générer le contenu CSV pour Excel
+  const generateCSVContent = () => {
+    const selectedTemplateObjects = selectedTemplates
+      .map(id => corepTemplates.find(t => t.id === id))
+      .filter(Boolean) as COREPTemplate[];
+
+    let csvContent = 'Template Code,Template Name,Description,Value,Currency,Reporting Date,Institution\n';
+
+    selectedTemplateObjects.forEach(template => {
+      const data = getTemplateData(template.id);
+      Object.entries(data).forEach(([section, values]) => {
+        values.forEach(item => {
+          csvContent += `"${template.code}","${template.name}","${item.description}",${item.value},"${item.currency}","${reportingDate}","PI BICARS Bank"\n`;
+        });
+      });
+    });
+
+    return csvContent;
+  };
+
+  // Télécharger un fichier
+  const downloadFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Générer l'export XBRL
   const generateExport = async () => {
+    if (selectedTemplates.length === 0) {
+      alert('Veuillez sélectionner au moins un template avant de générer l\'export.');
+      return;
+    }
+
     setGenerating(true);
 
-    // Simulation de génération
     setTimeout(() => {
+      const xbrlContent = generateXBRLContent();
+      const filename = `COREP_${reportingDate.replace(/-/g, '')}_PI_BICARS.xbrl`;
+      
+      downloadFile(xbrlContent, filename, 'application/xml');
+      
       setGenerating(false);
-      // Ici, on déclencherait le téléchargement du fichier
-      alert('Export COREP généré avec succès !');
-    }, 3000);
+      alert(`Export XBRL généré avec succès !\n\nFichier : ${filename}`);
+    }, 2000);
   };
 
   // Export Excel
   const exportToExcel = () => {
-    // Vérifier qu'il y a des templates sélectionnés
     if (selectedTemplates.length === 0) {
       alert('Veuillez sélectionner au moins un template avant d\'exporter.');
       return;
@@ -224,27 +370,24 @@ export const BankingCOREPExport: React.FC = () => {
     
     setExporting(true);
     
-    // Simulation d'export Excel
     setTimeout(() => {
-      const selectedCount = selectedTemplates.length;
-      const templateNames = selectedTemplates
-        .map(id => corepTemplates.find(t => t.id === id)?.code)
-        .join(', ');
+      const csvContent = generateCSVContent();
+      const filename = `COREP_Export_${reportingDate}.csv`;
       
-      alert(`Export Excel généré avec succès !\n\nFichier : COREP_Export_${reportingDate}.xlsx\nTemplates exportés : ${selectedCount}\n(${templateNames})`);
+      downloadFile(csvContent, filename, 'text/csv');
+      
       setExporting(false);
+      alert(`Export Excel généré avec succès !\n\nFichier : ${filename}\n\nLe fichier CSV peut être ouvert dans Excel.`);
     }, 1500);
   };
 
   // Prévisualiser
   const previewReport = () => {
-    // Vérifier qu'il y a des templates sélectionnés
     if (selectedTemplates.length === 0) {
       alert('Veuillez sélectionner au moins un template avant de prévisualiser.');
       return;
     }
     
-    // Vérifier si les données ont été validées
     if (validationResults.length === 0) {
       alert('Veuillez d\'abord valider les données avant de prévisualiser le rapport.');
       return;
@@ -252,14 +395,28 @@ export const BankingCOREPExport: React.FC = () => {
     
     setPreviewing(true);
     
-    // Simulation de prévisualisation
     setTimeout(() => {
-      const hasErrors = validationResults.some(r => r.status === 'error');
-      if (hasErrors) {
-        alert('Attention : Le rapport contient des erreurs de validation.\n\nCorrigez les erreurs avant de soumettre à la BCE.');
-      } else {
-        alert(`Prévisualisation du rapport COREP\n\nDate de reporting : ${reportingDate}\nInstitution : PI BICARS Bank\nTemplates : ${selectedTemplates.length} sélectionnés\nStatut : Prêt pour soumission`);
-      }
+      // Préparer les données pour la prévisualisation
+      const selectedTemplateObjects = selectedTemplates
+        .map(id => corepTemplates.find(t => t.id === id))
+        .filter(Boolean) as COREPTemplate[];
+
+      const previewInfo = {
+        reportingDate,
+        institution: 'PI BICARS Bank',
+        templates: selectedTemplateObjects.map(t => ({
+          code: t.code,
+          name: t.name,
+          status: t.status,
+          data: getTemplateData(t.id)
+        })),
+        validationResults,
+        hasErrors: validationResults.some(r => r.status === 'error'),
+        hasWarnings: validationResults.some(r => r.status === 'warning')
+      };
+
+      setPreviewData(previewInfo);
+      setShowPreview(true);
       setPreviewing(false);
     }, 1000);
   };
@@ -675,6 +832,152 @@ export const BankingCOREPExport: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Modal de prévisualisation */}
+        {showPreview && previewData && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div 
+              className="rounded-xl p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              style={{ backgroundColor: '#1e293b' }}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold" style={{ color: '#ffffff' }}>
+                  Prévisualisation du rapport COREP
+                </h2>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+                >
+                  <X className="h-5 w-5" style={{ color: '#94a3b8' }} />
+                </button>
+              </div>
+
+              {/* Informations générales */}
+              <div className="mb-6 p-4 rounded-lg" style={{ backgroundColor: '#0f172a' }}>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm" style={{ color: '#94a3b8' }}>Date de reporting</p>
+                    <p className="font-semibold" style={{ color: '#ffffff' }}>{previewData.reportingDate}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm" style={{ color: '#94a3b8' }}>Institution</p>
+                    <p className="font-semibold" style={{ color: '#ffffff' }}>{previewData.institution}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Statut de validation */}
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>
+                  Statut de validation
+                </h3>
+                <div className="flex items-center gap-4">
+                  {previewData.hasErrors ? (
+                    <div className="flex items-center gap-2 text-red-500">
+                      <XCircle className="h-5 w-5" />
+                      <span>Erreurs détectées</span>
+                    </div>
+                  ) : previewData.hasWarnings ? (
+                    <div className="flex items-center gap-2 text-yellow-500">
+                      <AlertCircle className="h-5 w-5" />
+                      <span>Avertissements</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2 text-green-500">
+                      <CheckCircle className="h-5 w-5" />
+                      <span>Prêt pour soumission</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Templates et données */}
+              <div>
+                <h3 className="text-lg font-semibold mb-3" style={{ color: '#ffffff' }}>
+                  Templates inclus ({previewData.templates.length})
+                </h3>
+                <div className="space-y-4">
+                  {previewData.templates.map((template: any, index: number) => (
+                    <div 
+                      key={index}
+                      className="p-4 rounded-lg"
+                      style={{ backgroundColor: '#0f172a' }}
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h4 className="font-semibold" style={{ color: '#ffffff' }}>
+                            {template.code} - {template.name}
+                          </h4>
+                        </div>
+                        <span 
+                          className="text-xs px-2 py-1 rounded-full"
+                          style={{
+                            backgroundColor: template.status === 'ready' ? '#d1fae5' : 
+                                           template.status === 'pending' ? '#fef3c7' : '#f3f4f6',
+                            color: template.status === 'ready' ? '#065f46' :
+                                  template.status === 'pending' ? '#92400e' : '#374151'
+                          }}
+                        >
+                          {template.status === 'ready' ? 'Prêt' :
+                           template.status === 'pending' ? 'En attente' : 'Brouillon'}
+                        </span>
+                      </div>
+                      
+                      {/* Aperçu des données */}
+                      <div className="mt-3 space-y-1">
+                        {Object.entries(template.data).map(([section, values]: [string, any]) => (
+                          <div key={section}>
+                            {values.slice(0, 2).map((item: any, idx: number) => (
+                              <div 
+                                key={idx} 
+                                className="flex justify-between text-sm"
+                                style={{ color: '#94a3b8' }}
+                              >
+                                <span>{item.description}</span>
+                                <span className="font-mono">{item.value} {item.currency}</span>
+                              </div>
+                            ))}
+                            {values.length > 2 && (
+                              <p className="text-xs mt-1" style={{ color: '#6B7280' }}>
+                                ... et {values.length - 2} autres lignes
+                              </p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="mt-6 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="px-4 py-2 rounded-lg hover:opacity-80 transition-opacity"
+                  style={{ backgroundColor: '#374151', color: '#ffffff' }}
+                >
+                  Fermer
+                </button>
+                <button
+                  onClick={() => {
+                    setShowPreview(false);
+                    generateExport();
+                  }}
+                  disabled={previewData.hasErrors}
+                  className="px-4 py-2 rounded-lg font-medium transition-all"
+                  style={{
+                    backgroundColor: previewData.hasErrors ? '#6B7280' : '#10b981',
+                    color: '#ffffff',
+                    cursor: previewData.hasErrors ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  Procéder à l'export
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
