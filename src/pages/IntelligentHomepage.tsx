@@ -7,9 +7,11 @@ import {
 import { useStore } from '../store';
 import { useTranslation } from '../hooks/useTranslation';
 import { ImportAssistant } from '../services/ai/ImportAssistant';
+import { useNavigate } from 'react-router-dom';
 
 const IntelligentHomepage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     darkMode,
     selectedSector,
@@ -45,7 +47,7 @@ const IntelligentHomepage = () => {
       icon: Brain,
       description: t('profiles.actuary.description', 'Modèles actuariels, réserves techniques, Solvency II'),
       color: 'from-purple-600 to-purple-700',
-      templates: ['Insurance KPIs', 'Claims Analytics', 'Solvency II Reports']
+      templates: ['Actuarial Analytics', 'Insurance KPIs', 'Solvency II Reports']  // AJOUT Actuarial Analytics
     },
     {
       id: 'risk-manager',
@@ -86,45 +88,23 @@ const IntelligentHomepage = () => {
     }
   };
 
-  // AJOUT: Fonction pour naviguer vers le Dashboard
+  // Fonction modifiée pour naviguer vers le Dashboard
   const navigateToDashboard = () => {
-    console.log('🚀 Navigation vers le Dashboard - DÉBUT');
-    console.log('📊 setActiveModule existe ?', typeof setActiveModule);
+    console.log('🚀 Navigation vers le Dashboard');
     
-    try {
-      // Si on a détecté des données de crédit, s'assurer qu'elles sont sauvegardées
-      if (analysisResult?.creditDetection?.isCreditData) {
-        console.log('💾 Sauvegarde des données crédit avant navigation');
-        const creditData = {
-          importedData: analysisResult.schema?.sampleData || [],
-          showCreditRisk: true,
-          analysisResult: analysisResult
-        };
-        localStorage.setItem('pendingCreditRiskData', JSON.stringify(creditData));
-      }
-      
-      // Marquer l'onboarding comme complété
-      console.log('📝 Appel setOnboardingCompleted');
-      setOnboardingCompleted(true);
-      
-      // Naviguer vers le dashboard
-      console.log('🎯 Appel setActiveModule("dashboard")');
-      setActiveModule('dashboard');
-      
-      // Vérification supplémentaire
-      setTimeout(() => {
-        console.log('✅ Module actif après navigation:', useStore.getState?.().activeModule);
-      }, 100);
-      
-    } catch (error) {
-      console.error('❌ Erreur dans navigateToDashboard:', error);
-      
-      // Fallback : essayer une navigation alternative
-      console.log('🔄 Tentative de fallback...');
-      window.location.hash = '#dashboard';
+    // Sauvegarder les données si nécessaire
+    if (analysisResult?.creditDetection?.isCreditData) {
+      console.log('💾 Sauvegarde des données crédit');
+      const creditData = {
+        importedData: analysisResult.schema?.sampleData || [],
+        showCreditRisk: true,
+        analysisResult: analysisResult
+      };
+      localStorage.setItem('pendingCreditRiskData', JSON.stringify(creditData));
     }
-
-    console.log('🚀 Navigation vers le Dashboard - FIN');
+    
+    // Navigation avec React Router
+    navigate('/');  // Aller à la vraie page d'accueil
   };
 
   // Analyse locale avec ImportAssistant
@@ -337,25 +317,37 @@ const IntelligentHomepage = () => {
     setUserProfile(profile);
   };
 
+  // Fonction modifiée pour gérer les clics sur les templates
   const handleTemplateClick = (template) => {
-    // Marquer l'onboarding comme complété
-    setOnboardingCompleted(true);
-    // Navigation vers le dashboard
-    setActiveModule('dashboard');
+    // Navigation selon le template
+    if (template === 'Actuarial Analytics') {
+      navigate('/actuarial-analytics');
+    } else if (template === 'Banking Dashboard') {
+      navigate('/banking/dashboard');
+    } else if (template === 'Insurance KPIs') {
+      navigate('/insurance/dashboard');
+    } else if (template === 'Credit Risk Analysis') {
+      navigate('/credit-risk');
+    } else if (template === 'Solvency II Reports') {
+      navigate('/insurance/solvency-module');
+    } else {
+      // Par défaut, aller au dashboard principal
+      navigate('/');
+    }
   };
 
   const handleStartAnalysis = () => {
     // Marquer l'onboarding comme complété
     setOnboardingCompleted(true);
     // Navigation vers le Co-pilot IA
-    setActiveModule('co-pilot');
+    navigate('/copilot');
   };
 
   const handleExploreDashboard = () => {
     // Marquer l'onboarding comme complété
     setOnboardingCompleted(true);
-    // Navigation vers le dashboard
-    setActiveModule('dashboard');
+    // Navigation vers le dashboard ML
+    navigate('/dashboard');
   };
 
   return (
@@ -375,12 +367,20 @@ const IntelligentHomepage = () => {
               <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
                 {t('homepage.welcome', 'Bienvenue dans votre espace d\'analyse')}
               </span>
-              {/* AJOUT: Bouton d'accès rapide au Dashboard dans le header */}
+              {/* Bouton d'accès rapide au Dashboard dans le header */}
               <button 
                 onClick={navigateToDashboard}
                 className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center space-x-1"
               >
                 <span>Accéder au Dashboard</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+              {/* NOUVEAU: Bouton direct Actuarial Analytics */}
+              <button 
+                onClick={() => navigate('/actuarial-analytics')}
+                className="text-sm bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-1"
+              >
+                <span>Actuarial Analytics</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -561,7 +561,7 @@ const IntelligentHomepage = () => {
                     </div>
                   </div>
                   
-                  {/* AJOUT: Bouton "Voir le Dashboard" après l'analyse */}
+                  {/* Bouton "Voir le Dashboard" après l'analyse */}
                   <div className="mt-4 flex justify-center">
                     <button
                       onClick={navigateToDashboard}

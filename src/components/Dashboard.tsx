@@ -1,73 +1,16 @@
-import React, { useState } from 'react';
-import { 
-  Brain, Shield, CreditCard, TrendingUp, 
-  BarChart3, FileText, Zap, Users,
-  ChartBar, PieChart, LineChart, Target,
-  Activity, AlertCircle, Cpu, Database,
-  GitBranch, Settings, PlayCircle, CheckCircle,
-  Upload // Icône ajoutée
-} from 'lucide-react';
-import { useStore } from '../store';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import {
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar,
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  LineChart as RechartsLineChart, Line, Area, AreaChart
+  LineChart as RechartsLineChart, Line, Area, AreaChart, Legend
 } from 'recharts';
+import { useStore } from '../store';
+import { ArrowUp, ArrowDown, Star, Database, Zap, BarChart2, Activity, ChevronDown, GitBranch, Cpu, TrendingUp, LineChart } from 'lucide-react';
 
 const Dashboard = () => {
   const { darkMode } = useStore();
-  const navigate = useNavigate();
-  const [selectedModel, setSelectedModel] = useState('xgboost');
-
-  // Données pour les graphiques
-  const modelPerformance = [
-    { model: 'XGBoost', accuracy: 94, speed: 85, interpretability: 75 },
-    { model: 'LSTM', accuracy: 92, speed: 60, interpretability: 45 },
-    { model: 'Prophet', accuracy: 88, speed: 90, interpretability: 85 },
-    { model: 'ARIMA', accuracy: 82, speed: 95, interpretability: 90 },
-    { model: 'Cox', accuracy: 86, speed: 88, interpretability: 80 }
-  ];
-
-  const fraudDetectionData = [
-    { month: 'Jan', detected: 142, falsePositive: 8 },
-    { month: 'Fév', detected: 156, falsePositive: 6 },
-    { month: 'Mar', detected: 189, falsePositive: 5 },
-    { month: 'Avr', detected: 213, falsePositive: 4 },
-    { month: 'Mai', detected: 245, falsePositive: 3 },
-    { month: 'Jun', detected: 267, falsePositive: 3 }
-  ];
-
-  const secteurs = [
-    {
-      id: 'banking',
-      title: 'Banking & Finance',
-      description: 'Solutions ML complètes pour le secteur bancaire',
-      icon: CreditCard,
-      stats: { label: 'Modèles actifs', value: 12 },
-      color: 'blue',
-      modules: ['Credit Scoring', 'Fraud Detection', 'Risk Prediction', 'Customer Churn']
-    },
-    {
-      id: 'insurance',
-      title: 'Assurance',
-      description: 'IA spécialisée pour les assureurs',
-      icon: Shield,
-      stats: { label: 'Modèles actifs', value: 10 },
-      color: 'purple',
-      modules: ['Claims Prediction', 'Underwriting ML', 'Fraud Detection', 'Customer Lifetime Value']
-    },
-    {
-      id: 'fintech',
-      title: 'Fintech & Innovation',
-      description: 'Solutions IA pour la finance digitale',
-      icon: Zap,
-      stats: { label: 'En développement', value: 8 },
-      color: 'green',
-      modules: ['Real-time Scoring', 'Blockchain ML', 'Payment Fraud', 'AML Detection']
-    }
-  ];
-
+  
+  // Liste des modèles avec structure complète
   const mlModels = [
     {
       id: 'xgboost',
@@ -121,171 +64,115 @@ const Dashboard = () => {
     }
   ];
 
-  const analysesAvancees = [
-    {
-      title: 'Détection de Fraude',
-      description: 'ML temps réel avec Isolation Forest et Graph Networks',
-      icon: AlertCircle,
-      features: ['99.2% précision', 'Temps réel', 'Auto-apprentissage'],
-      metric: '267 fraudes/mois'
-    },
-    {
-      title: 'Alertes Prédictives',
-      description: 'Système d\'alertes basé sur patterns et anomalies',
-      icon: Activity,
-      features: ['Alertes personnalisées', 'Multi-canal', 'Priorisation IA'],
-      metric: '1.2k alertes/jour'
-    },
-    {
-      title: 'AutoML Pipeline',
-      description: 'Pipeline automatisé de sélection et optimisation de modèles',
-      icon: Settings,
-      features: ['Feature engineering', 'Hyperparameter tuning', 'Model selection'],
-      metric: '85% automatisé'
-    },
-    {
-      title: 'Explainable AI',
-      description: 'SHAP/LIME pour transparence et conformité réglementaire',
-      icon: Database,
-      features: ['Interprétabilité', 'Compliance ready', 'Audit trail'],
-      metric: '100% explicable'
-    }
+  // Données pour le graphique radar
+  const modelPerformance = [
+    { model: 'XGBoost', accuracy: 94, speed: 90, interpretability: 70 },
+    { model: 'LSTM', accuracy: 92, speed: 60, interpretability: 40 },
+    { model: 'Prophet', accuracy: 88, speed: 85, interpretability: 80 },
+    { model: 'ARIMA', accuracy: 82, speed: 95, interpretability: 90 },
+    { model: 'Cox', accuracy: 86, speed: 75, interpretability: 85 },
   ];
 
-  const getColorClasses = (color: string) => {
-    const colors = {
-      blue: {
-        bg: darkMode ? 'bg-blue-900/20' : 'bg-blue-50',
-        border: darkMode ? 'border-blue-700' : 'border-blue-200',
-        icon: darkMode ? 'text-blue-400' : 'text-blue-600',
-        badge: darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-800',
-        gradient: 'from-blue-500 to-cyan-500'
-      },
-      purple: {
-        bg: darkMode ? 'bg-purple-900/20' : 'bg-purple-50',
-        border: darkMode ? 'border-purple-700' : 'border-purple-200',
-        icon: darkMode ? 'text-purple-400' : 'text-purple-600',
-        badge: darkMode ? 'bg-purple-900/50 text-purple-300' : 'bg-purple-100 text-purple-800',
-        gradient: 'from-purple-500 to-pink-500'
-      },
-      green: {
-        bg: darkMode ? 'bg-green-900/20' : 'bg-green-50',
-        border: darkMode ? 'border-green-700' : 'border-green-200',
-        icon: darkMode ? 'text-green-400' : 'text-green-600',
-        badge: darkMode ? 'bg-green-900/50 text-green-300' : 'bg-green-100 text-green-800',
-        gradient: 'from-green-500 to-emerald-500'
-      },
-      orange: {
-        bg: darkMode ? 'bg-orange-900/20' : 'bg-orange-50',
-        border: darkMode ? 'border-orange-700' : 'border-orange-200',
-        icon: darkMode ? 'text-orange-400' : 'text-orange-600',
-        badge: darkMode ? 'bg-orange-900/50 text-orange-300' : 'bg-orange-100 text-orange-800',
-        gradient: 'from-orange-500 to-yellow-500'
-      },
-      red: {
-        bg: darkMode ? 'bg-red-900/20' : 'bg-red-50',
-        border: darkMode ? 'border-red-700' : 'border-red-200',
-        icon: darkMode ? 'text-red-400' : 'text-red-600',
-        badge: darkMode ? 'bg-red-900/50 text-red-300' : 'bg-red-100 text-red-800',
-        gradient: 'from-red-500 to-pink-500'
-      }
-    };
-    return colors[color as keyof typeof colors] || colors.blue;
-  };
+  // Données pour le graphique à barres
+  const modelUsageData = [
+    { name: 'XGBoost', usage: 42, color: '#3b82f6' },
+    { name: 'LSTM', usage: 28, color: '#8b5cf6' },
+    { name: 'Prophet', usage: 35, color: '#10b981' },
+    { name: 'ARIMA', usage: 22, color: '#f59e0b' },
+    { name: 'Cox', usage: 18, color: '#ef4444' },
+  ];
 
   return (
-    <div className={`min-h-screen ${darkMode ? 'bg-slate-900' : 'bg-gray-50'}`}>
-      {/* Header Section */}
-      <div className={`${darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-gray-200'} border-b`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center mb-4">
-            <Brain className={`h-10 w-10 mr-3 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-            <div>
-              <h1 className={`text-3xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                Analyses Avancées ML & Prédictions
-              </h1>
-              <p className={`text-lg mt-1 ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                Pipeline AutoML avec XGBoost, LSTM, Prophet, ARIMA et Cox Models
-              </p>
-            </div>
-          </div>
-          
-          {/* Métriques clés */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-gray-100'}`}>
-              <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Modèles actifs</p>
-              <p className={`text-2xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>30+</p>
-            </div>
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-gray-100'}`}>
-              <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Précision moyenne</p>
-              <p className={`text-2xl font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>94.2%</p>
-            </div>
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-gray-100'}`}>
-              <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Prédictions/jour</p>
-              <p className={`text-2xl font-bold ${darkMode ? 'text-blue-400' : 'text-blue-600'}`}>1.5M</p>
-            </div>
-            <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-gray-100'}`}>
-              <p className={`text-sm ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>ROI moyen</p>
-              <p className={`text-2xl font-bold ${darkMode ? 'text-purple-400' : 'text-purple-600'}`}>320%</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className={`min-h-screen ${darkMode ? 'bg-gray-900 text-gray-100' : 'bg-gray-50 text-gray-900'} transition-colors duration-200`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Section Modèles ML */}
-        <h2 className={`text-2xl font-semibold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Modèles Machine Learning Disponibles
-        </h2>
-        
+        {/* En-tête du dashboard */}
+        <div className="mb-10">
+          <h1 className="text-3xl font-bold mb-2">Tableau de bord des modèles ML</h1>
+          <p className={`${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+            Analyse comparative des performances et utilisation des modèles
+          </p>
+        </div>
+
+        {/* Section des indicateurs clés */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {[
+            { icon: Database, title: 'Modèles actifs', value: '12', color: 'blue', trend: '+3' },
+            { icon: BarChart2, title: 'Précision moyenne', value: '89.2%', color: 'purple', trend: '+1.5%' },
+            { icon: Zap, title: 'Latence moyenne', value: '128ms', color: 'green', trend: '-22ms', negative: true },
+            { icon: Star, title: 'Modèle favori', value: 'XGBoost', color: 'yellow', subtext: '42% utilisation' }
+          ].map((item, index) => (
+            <div key={index} className={`p-6 rounded-xl ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
+              <div className="flex items-center">
+                <div className={`p-3 rounded-lg mr-4 bg-${item.color}-500/10`}>
+                  <item.icon className={`text-${item.color}-500`} size={20} />
+                </div>
+                <div>
+                  <p className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>{item.title}</p>
+                  <p className="text-2xl font-bold mt-1">{item.value}</p>
+                </div>
+              </div>
+              {item.trend ? (
+                <div className="flex items-center mt-3">
+                  {item.negative ? (
+                    <ArrowDown className="text-red-500" size={16} />
+                  ) : (
+                    <ArrowUp className="text-green-500" size={16} />
+                  )}
+                  <span className={`text-sm ml-1 ${item.negative ? 'text-red-500' : 'text-green-500'}`}>
+                    {item.trend}
+                  </span>
+                </div>
+              ) : (
+                <div className="mt-3">
+                  <span className={`text-sm ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                    {item.subtext}
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Section des graphiques */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Liste des modèles */}
           <div className="space-y-4">
-            {mlModels.map((model) => {
+            {mlModels.map((model, index) => {
               const Icon = model.icon;
-              const colors = getColorClasses(model.color);
-              const isSelected = selectedModel === model.id;
-              
               return (
-                <div
-                  key={model.id}
-                  onClick={() => setSelectedModel(model.id)}
-                  className={`rounded-xl p-6 border-2 transition-all cursor-pointer
-                    ${isSelected 
-                      ? `${colors.border} ${colors.bg}` 
-                      : darkMode 
-                        ? 'border-slate-700 hover:border-slate-600' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }
-                    ${darkMode ? 'bg-slate-800' : 'bg-white'}`}
+                <div 
+                  key={index} 
+                  className={`p-4 rounded-lg ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'} transition-all hover:scale-[1.02] flex items-start`}
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4">
-                      <div className={`p-3 rounded-lg ${colors.bg}`}>
-                        <Icon className={`h-6 w-6 ${colors.icon}`} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className={`text-lg font-semibold mb-1 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                          {model.name}
-                        </h3>
-                        <p className={`text-sm mb-3 ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                          {model.description}
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {model.useCases.map((useCase, idx) => (
-                            <span
-                              key={idx}
-                              className={`text-xs px-2 py-1 rounded-full ${colors.badge}`}
-                            >
-                              {useCase}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
+                  <div className={`p-3 rounded-lg mr-4 bg-${model.color}-500/10`}>
+                    <Icon className={`text-${model.color}-500`} size={20} />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className={`font-bold text-lg ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+                      {model.name}
+                    </h4>
+                    <p className={`text-sm mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                      {model.description}
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {model.useCases.map((useCase, i) => (
+                        <span 
+                          key={i} 
+                          className={`text-xs px-2 py-1 rounded-full ${darkMode ? 'bg-slate-700' : 'bg-gray-100'}`}
+                        >
+                          {useCase}
+                        </span>
+                      ))}
                     </div>
-                    <div className="text-right">
-                      <p className={`text-2xl font-bold ${colors.icon}`}>{model.accuracy}</p>
-                      <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>Précision</p>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <div className="flex items-center">
+                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Précision:</span>
+                        <span className="font-medium ml-2">{model.accuracy}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>Vitesse:</span>
+                        <span className="font-medium ml-2">{model.speed}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -293,207 +180,146 @@ const Dashboard = () => {
             })}
           </div>
 
-          {/* Graphique de performance */}
+          {/* Graphique de performance avec corrections définitives */}
           <div className={`rounded-xl p-6 ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
             <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-              Comparaison des Performances
+              Comparaison des Performances des Modèles ML
+              <span className={`text-sm font-normal block mt-1 ${darkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                (Précision, Vitesse, Interprétabilité)
+              </span>
             </h3>
-            <ResponsiveContainer width="100%" height={350}>
-              <RadarChart data={modelPerformance}>
-                <PolarGrid stroke={darkMode ? '#334155' : '#e5e7eb'} />
-                <PolarAngleAxis dataKey="model" stroke={darkMode ? '#94a3b8' : '#6b7280'} />
-                <PolarRadiusAxis angle={90} domain={[0, 100]} stroke={darkMode ? '#94a3b8' : '#6b7280'} />
-                <Radar name="Précision" dataKey="accuracy" stroke="#8b5cf6" fill="#8b5cf6" fillOpacity={0.6} />
-                <Radar name="Vitesse" dataKey="speed" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.6} />
-                <Radar name="Interprétabilité" dataKey="interpretability" stroke="#10b981" fill="#10b981" fillOpacity={0.6} />
+            
+            <ResponsiveContainer width="100%" height={500}>
+              <RadarChart 
+                data={modelPerformance} 
+                margin={{ top: 80, right: 50, bottom: 40, left: 50 }}
+                cx="50%" 
+                cy="50%"
+              >
+                <PolarGrid 
+                  stroke={darkMode ? '#475569' : '#e5e7eb'} 
+                  strokeDasharray="3 3"
+                />
+                
+                <PolarAngleAxis 
+                  dataKey="model" 
+                  stroke={darkMode ? '#f1f1f1' : '#374151'}
+                  tick={{ 
+                    fontSize: 13,
+                    fill: darkMode ? '#f1f1f1' : '#374151',
+                    fontWeight: 600
+                  }}
+                  tickMargin={25}
+                  radius={150}
+                />
+                
+                <PolarRadiusAxis 
+                  angle={90} 
+                  domain={[0, 100]} 
+                  stroke={darkMode ? '#f1f1f1' : '#6b7280'}
+                  tick={{ 
+                    fontSize: 14,
+                    fill: darkMode ? '#f1f1f1' : '#374151',
+                    fontWeight: 700,
+                    dx: -15,
+                    dy: 3
+                  }}
+                  tickCount={5}
+                  tickFormatter={(value) => `${value}%`}
+                />
+                
+                <Radar 
+                  name="Précision" 
+                  dataKey="accuracy" 
+                  stroke="#8b5cf6" 
+                  fill="#8b5cf6" 
+                  fillOpacity={0.6}
+                  strokeWidth={2}
+                  dot={{ r: 6, fill: '#8b5cf6', strokeWidth: 2, stroke: '#fff' }}
+                />
+                <Radar 
+                  name="Vitesse" 
+                  dataKey="speed" 
+                  stroke="#3b82f6" 
+                  fill="#3b82f6" 
+                  fillOpacity={0.6}
+                  strokeWidth={2}
+                  dot={{ r: 6, fill: '#3b82f6', strokeWidth: 2, stroke: '#fff' }}
+                />
+                <Radar 
+                  name="Interprétabilité" 
+                  dataKey="interpretability" 
+                  stroke="#10b981" 
+                  fill="#10b981" 
+                  fillOpacity={0.6}
+                  strokeWidth={2}
+                  dot={{ r: 6, fill: '#10b981', strokeWidth: 2, stroke: '#fff' }}
+                />
+                
                 <Tooltip 
                   contentStyle={{ 
                     backgroundColor: darkMode ? '#1e293b' : '#fff',
-                    border: 'none',
-                    borderRadius: '8px'
+                    border: '1px solid',
+                    borderColor: darkMode ? '#475569' : '#e5e7eb',
+                    borderRadius: '8px',
+                    padding: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                   }}
+                  formatter={(value, name) => [`${value}/100`, name]}
+                  labelStyle={{
+                    color: darkMode ? '#e2e8f0' : '#374151',
+                    fontWeight: 'bold',
+                    marginBottom: '4px'
+                  }}
+                />
+                
+                <Legend 
+                  verticalAlign="bottom" 
+                  align="center"
+                  iconType="rect"
+                  iconSize={12}
+                  wrapperStyle={{
+                    paddingTop: '30px',
+                    fontSize: '14px'
+                  }}
+                  formatter={(value) => (
+                    <span style={{ 
+                      color: darkMode ? '#e2e8f0' : '#374151',
+                      marginLeft: '4px'
+                    }}>
+                      {value}
+                    </span>
+                  )}
                 />
               </RadarChart>
             </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Analyses Avancées & Fonctionnalités */}
-        <h2 className={`text-2xl font-semibold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Fonctionnalités IA Avancées
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          {analysesAvancees.map((analyse, index) => {
-            const Icon = analyse.icon;
-            return (
-              <div
-                key={index}
-                className={`rounded-lg p-6 border transition-all hover:shadow-md
-                  ${darkMode 
-                    ? 'bg-slate-800 border-slate-700 hover:border-slate-600' 
-                    : 'bg-white border-gray-200 hover:border-gray-300'}`}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`inline-flex p-3 rounded-lg
-                    ${darkMode ? 'bg-purple-900/50' : 'bg-purple-100'}`}>
-                    <Icon className={`h-6 w-6 ${darkMode ? 'text-purple-400' : 'text-purple-600'}`} />
-                  </div>
-                  <span className={`text-lg font-bold ${darkMode ? 'text-emerald-400' : 'text-emerald-600'}`}>
-                    {analyse.metric}
-                  </span>
-                </div>
-                
-                <h3 className={`text-lg font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {analyse.title}
-                </h3>
-                <p className={`text-sm mb-4 ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                  {analyse.description}
-                </p>
-                
-                <div className="space-y-1">
-                  {analyse.features.map((feature, idx) => (
-                    <div 
-                      key={idx} 
-                      className={`text-xs flex items-center ${darkMode ? 'text-slate-500' : 'text-gray-500'}`}
-                    >
-                      <CheckCircle className="w-3 h-3 mr-1 text-emerald-500" />
-                      {feature}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Graphique Détection de Fraude */}
-        <div className={`rounded-xl p-6 mb-12 ${darkMode ? 'bg-slate-800' : 'bg-white shadow-sm'}`}>
-          <h3 className={`text-lg font-semibold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-            Performance Détection de Fraude (6 derniers mois)
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={fraudDetectionData}>
-              <defs>
-                <linearGradient id="fraudGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.1}/>
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#334155' : '#e5e7eb'} />
-              <XAxis dataKey="month" stroke={darkMode ? '#94a3b8' : '#6b7280'} />
-              <YAxis stroke={darkMode ? '#94a3b8' : '#6b7280'} />
-              <Tooltip 
-                contentStyle={{ 
-                  backgroundColor: darkMode ? '#1e293b' : '#fff',
-                  border: 'none',
-                  borderRadius: '8px'
-                }}
-              />
-              <Area 
-                type="monotone" 
-                dataKey="detected" 
-                stroke="#8b5cf6" 
-                fillOpacity={1} 
-                fill="url(#fraudGradient)"
-                name="Fraudes détectées"
-              />
-              <Line 
-                type="monotone" 
-                dataKey="falsePositive" 
-                stroke="#ef4444" 
-                strokeWidth={2}
-                name="Faux positifs"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Secteurs Section */}
-        <h2 className={`text-2xl font-semibold mb-6 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-          Applications par Secteur
-        </h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {secteurs.map((secteur) => {
-            const Icon = secteur.icon;
-            const colors = getColorClasses(secteur.color);
             
-            return (
-              <div
-                key={secteur.id}
-                className={`rounded-xl p-6 border-2 transition-all hover:shadow-lg cursor-pointer
-                  ${colors.bg} ${colors.border}
-                  ${darkMode ? 'hover:border-slate-600' : 'hover:border-gray-300'}`}
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-lg ${darkMode ? 'bg-slate-700' : 'bg-white'}`}>
-                    <Icon className={`h-6 w-6 ${colors.icon}`} />
-                  </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${colors.badge}`}>
-                    {secteur.stats.value} {secteur.stats.label}
-                  </span>
-                </div>
-                
-                <h3 className={`text-xl font-semibold mb-2 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
-                  {secteur.title}
-                </h3>
-                <p className={`mb-4 ${darkMode ? 'text-slate-400' : 'text-gray-600'}`}>
-                  {secteur.description}
-                </p>
-                
-                <div className="space-y-1">
-                  {secteur.modules.map((module, idx) => (
-                    <div key={idx} className={`text-sm ${darkMode ? 'text-slate-500' : 'text-gray-500'}`}>
-                      • {module}
-                    </div>
-                  ))}
-                </div>
+            <div className="flex justify-center items-center space-x-6 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-purple-500"></div>
+                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Précision
+                </span>
               </div>
-            );
-          })}
-
-          {/* Ajout du bouton Import Intelligent */}
-          <div 
-            onClick={() => navigate('/import-advanced')}
-            className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl p-6 cursor-pointer hover:shadow-xl transition-all flex flex-col justify-between"
-          >
-            <div>
-              <Upload className="h-8 w-8 text-white mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">Import Intelligent</h3>
-              <p className="text-purple-100">OCR PDF & APIs temps réel</p>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Vitesse
+                </span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                <span className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  Interprétabilité
+                </span>
+              </div>
             </div>
-          </div>
-        </div>
-
-        {/* CTA Section */}
-        <div className={`rounded-2xl p-8 text-center bg-gradient-to-r from-purple-600 to-indigo-600`}>
-          <h3 className="text-2xl font-bold text-white mb-4">
-            Prêt à exploiter la puissance de l'IA ?
-          </h3>
-          <p className="text-purple-100 mb-6 max-w-2xl mx-auto">
-            Notre pipeline AutoML analyse vos données et sélectionne automatiquement les meilleurs modèles 
-            pour vos cas d'usage spécifiques en finance et assurance.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => navigate('/data-import')}
-              className="bg-white text-purple-700 px-8 py-3 rounded-lg font-semibold hover:bg-purple-50 transition-colors flex items-center justify-center"
-            >
-              <PlayCircle className="h-5 w-5 mr-2" />
-              Démarrer l'analyse
-            </button>
-            <button
-              onClick={() => navigate('/demo')}
-              className="bg-purple-700 text-white px-8 py-3 rounded-lg font-semibold hover:bg-purple-800 transition-colors border border-purple-500"
-            >
-              Voir une démo
-            </button>
           </div>
         </div>
       </div>
     </div>
   );
-};  // Fin de la fonction Dashboard
+};
 
+export default Dashboard;
 export { Dashboard };

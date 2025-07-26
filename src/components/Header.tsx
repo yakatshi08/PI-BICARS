@@ -1,16 +1,15 @@
 // Chemin: C:\PROJETS-DEVELOPPEMENT\Analyse_Donnees_CLEAN\project\src\components\Header.tsx
 
 import React, { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom'; // Ajout de useNavigate
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Bell, Settings, Moon, Sun, Globe, Brain, ChevronDown } from 'lucide-react';
 import { useStore } from '../store';
 
 export const Header: React.FC = () => {
   const location = useLocation();
-  const navigate = useNavigate(); // Hook pour la navigation
-  const { darkMode, toggleDarkMode, language, setLanguage } = useStore();
+  const navigate = useNavigate();
+  const { darkMode, toggleDarkMode: toggleTheme, language, setLanguage } = useStore();
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
   const notifications = [
@@ -26,7 +25,6 @@ export const Header: React.FC = () => {
     { code: 'de', label: 'DE', flag: '🇩🇪' },
   ];
 
-  // Détermine le module actif pour la coloration
   const activeModule = location.pathname.split('/')[1];
 
   return (
@@ -42,85 +40,96 @@ export const Header: React.FC = () => {
               <h1 className={`text-xl font-bold ${darkMode ? 'text-white' : 'text-gray-900'}`}>
                 PI BICARS
               </h1>
-              <p className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-600'} hidden sm:block whitespace-nowrap`}>
+              <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-500'} hidden sm:block whitespace-nowrap`}>
                 Plateforme Intelligence Finance & Assurance
               </p>
             </div>
           </Link>
 
-          {/* Navigation centrale avec espacement optimisé */}
-          <nav className="flex items-center gap-4 lg:gap-6 mx-auto">
-            <Link
-              to="/"
-              className={`px-4 sm:px-5 py-2.5 rounded-lg font-medium transition-all
-                ${location.pathname === '/'
-                  ? darkMode 
-                    ? 'bg-blue-600 text-white shadow-md' 
-                    : 'bg-blue-600 text-white shadow-md'
+          {/* Navigation principale */}
+          <div className="flex items-center space-x-2">
+            {/* Bouton Tous */}
+            <button
+              onClick={() => navigate('/')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                location.pathname === '/'
+                  ? 'bg-blue-600 text-white'
                   : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-800'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
               Tous
-            </Link>
+            </button>
 
-            <Link
-              to="/banking"
-              className={`px-4 sm:px-5 py-2.5 rounded-lg font-medium transition-all
-                ${location.pathname.includes('/banking')
-                  ? darkMode 
-                    ? 'bg-green-600 text-white shadow-md' 
-                    : 'bg-green-600 text-white shadow-md'
+            {/* Bouton Bancaire */}
+            <button
+              onClick={() => navigate('/banking')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                activeModule === 'banking'
+                  ? 'bg-blue-600 text-white'
                   : darkMode
-                    ? 'text-gray-300 hover:text-white hover:bg-gray-800'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                }`}
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
               Bancaire
-            </Link>
+            </button>
 
-            {/* MODIFICATION APPLIQUÉE ICI */}
+            {/* Bouton Assurance */}
             <button
               onClick={() => navigate('/insurance/dashboard')}
-              className={`px-6 py-2 rounded-lg font-medium transition-all ${
+              className={`px-4 py-2 rounded-lg font-medium transition-all ${
                 activeModule === 'insurance'
                   ? 'bg-purple-600 text-white'
                   : darkMode
-                  ? 'text-gray-300 hover:text-white'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
               }`}
             >
               Assurance
             </button>
 
-            {/* Co-Pilot avec style amélioré */}
-            <Link
-              to="/copilot"
-              className={`px-4 sm:px-5 py-2.5 rounded-lg font-medium transition-all flex items-center gap-2 whitespace-nowrap
-                ${location.pathname === '/copilot'
-                  ? 'bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 text-white shadow-lg transform scale-105'
+            {/* Bouton ML & IA - CORRIGÉ */}
+            <button
+              onClick={() => navigate('/dashboard')}
+              className={`px-4 py-2 rounded-lg font-medium transition-all whitespace-nowrap ${
+                location.pathname === '/dashboard'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white'
                   : darkMode
-                    ? 'bg-gradient-to-r from-purple-700 to-pink-700 text-white hover:from-purple-600 hover:to-pink-600 shadow-md hover:shadow-lg transform hover:scale-105 border border-purple-500/30'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700 shadow-md hover:shadow-lg transform hover:scale-105'
-                }`}
+                  ? 'text-gray-300 hover:text-white hover:bg-gray-700'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+              }`}
             >
-              <Brain className="h-4 w-4 flex-shrink-0" />
-              <span className="font-semibold">Co-Pilot</span>
-            </Link>
-          </nav>
+              ML & IA
+            </button>
 
-          {/* Actions utilisateur simplifiées */}
-          <div className="flex items-center gap-3 flex-shrink-0">
+            {/* Bouton Co-Pilot - Padding réduit */}
+            <button
+              onClick={() => navigate('/copilot')}
+              className="ml-4 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-pink-700 transition-all flex items-center space-x-2 group relative"
+              title="Assistant IA pour l'analyse, les recommandations et la prédiction ML"
+            >
+              <Brain className="h-5 w-5" />
+              <span>Co-Pilot</span>
+              {/* Infobulle */}
+              <div className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 hidden group-hover:block w-64 p-2 bg-gray-900 text-white text-xs rounded-lg shadow-lg">
+                Assistant IA pour l'analyse, les recommandations et la prédiction ML
+              </div>
+            </button>
+          </div>
+
+          {/* Section des icônes à droite */}
+          <div className="flex items-center space-x-3">
             {/* Notifications */}
             <div className="relative">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className={`p-2 rounded-lg relative ${darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100'}`}
+                className="p-2 rounded-lg relative hover:bg-gray-700 transition-colors"
                 aria-label="Notifications"
               >
-                <Bell className="h-5 w-5" />
-                <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full animate-pulse"></span>
+                <Bell className="h-5 w-5 text-gray-300" />
+                <span className="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
               </button>
 
               {showNotifications && (
@@ -147,19 +156,18 @@ export const Header: React.FC = () => {
             </div>
 
             {/* Paramètres */}
-            <button
-              onClick={() => setShowSettings(!showSettings)}
-              className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100'}`}
-              aria-label="Paramètres"
+            <button 
+              onClick={() => navigate('/settings')}
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="h-5 w-5 text-gray-300" />
             </button>
 
-            {/* Mode sombre */}
-            <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-lg ${darkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-              aria-label="Basculer le mode sombre"
+            {/* Thème - Avec infobulle */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors group relative"
+              title={darkMode ? "Passer au thème clair" : "Passer au thème sombre"}
             >
               {darkMode ? (
                 <Sun className="h-5 w-5 text-yellow-400" />
@@ -168,21 +176,16 @@ export const Header: React.FC = () => {
               )}
             </button>
 
-            {/* Sélecteur de langue amélioré */}
+            {/* Langue - Corrigé pour FR */}
             <div className="relative">
               <button
                 onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all
-                  ${darkMode 
-                    ? 'hover:bg-gray-800 text-gray-300 hover:text-white' 
-                    : 'hover:bg-gray-100 text-gray-700'
-                  }`}
+                className="flex items-center space-x-1 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors"
               >
-                <Globe className="h-4 w-4" />
-                <span className="text-sm font-medium">
+                <Globe className="h-5 w-5 text-gray-300" />
+                <span className="text-sm text-gray-300">
                   {languages.find(l => l.code === language)?.label || 'FR'}
                 </span>
-                <ChevronDown className="h-3 w-3" />
               </button>
 
               {showLanguageMenu && (

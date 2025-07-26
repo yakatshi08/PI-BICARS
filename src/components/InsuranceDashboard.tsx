@@ -368,6 +368,14 @@ export const InsuranceDashboard: React.FC = () => {
               <BarChart3 className="h-5 w-5" />
               Analyse des Risques
             </button>
+            {/* AJOUT DU BOUTON CLAIMS & UNDERWRITING */}
+            <button
+              onClick={() => navigate('/claims-underwriting')}
+              className="flex items-center gap-2 px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+            >
+              <FileText className="h-5 w-5" />
+              Claims & Underwriting
+            </button>
           </div>
         </div>
 

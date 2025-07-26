@@ -9,16 +9,22 @@ import { BankingDashboard } from './components/BankingDashboard';
 import { BankingStressTest } from './components/BankingStressTest';
 import { BankingCOREPExport } from './components/BankingCOREPExport';
 import { CoPilotIA } from './components/CoPilotIA';
-import { Dashboard } from './components/Dashboard';
 import { DataImport } from './components/DataImport';
 import { Header } from './components/Header';
 import { InsuranceCore } from './components/InsuranceCore';
-import { InsuranceDashboard } from './components/InsuranceDashboard'; // AJOUT IMPORT
+import { InsuranceDashboard } from './components/InsuranceDashboard';
 import { Settings } from './components/Settings';
 import { BankingSimulation } from './components/BankingSimulation';
-import { ImportIntelligentAdvanced } from './components/ImportIntelligentAdvanced'; // Ajouté
-import { InsuranceSCRDetail } from './components/InsuranceSCRDetail'; // AJOUT IMPORT
-import { InsuranceRiskAnalysis } from './components/InsuranceRiskAnalysis'; // AJOUT IMPORT
+import { ImportIntelligentAdvanced } from './components/ImportIntelligentAdvanced';
+import { InsuranceSCRDetail } from './components/InsuranceSCRDetail';
+import { InsuranceRiskAnalysis } from './components/InsuranceRiskAnalysis';
+import { InsuranceCombinedRatio } from './components/InsuranceCombinedRatio';
+import ActuarialDashboard from './components/ActuarialDashboard';
+import ActuarialProvisioning from './components/ActuarialProvisioning';
+// AJOUT: Import du composant ClaimsUnderwritingDashboard
+import ClaimsUnderwritingDashboard from './components/ClaimsUnderwritingDashboard';
+// AJOUT: Import du composant ClaimsManagement
+import ClaimsManagement from './components/ClaimsManagement';
 
 // Imports par défaut (sans accolades)
 import Analyses from './components/Analyses';
@@ -26,6 +32,7 @@ import Reports from './components/Reports';
 import LiquidityALM from './components/LiquidityALM';
 import MarketRisk from './components/MarketRisk';
 import Predictions from './components/Predictions';
+import Dashboard from './components/Dashboard';
 
 // Nouveaux imports
 import ActuarialAnalytics from './components/ActuarialAnalytics';
@@ -121,13 +128,25 @@ function App() {
           <Route path="/insurance/dashboard" element={<InsuranceDashboard />} />
           
           <Route path="/insurance/scr-details" element={<InsurancePlaceholder title="SCR Coverage - Détails" />} />
-          <Route path="/insurance/scr-detail" element={<InsuranceSCRDetail />} /> {/* AJOUT DE LA ROUTE */}
-          <Route path="/insurance/risk-analysis" element={<InsuranceRiskAnalysis />} /> {/* AJOUT DE LA ROUTE */}
-          <Route path="/insurance/combined-ratio" element={<InsurancePlaceholder title="Combined Ratio - Analyse" />} />
+          <Route path="/insurance/scr-detail" element={<InsuranceSCRDetail />} />
+          <Route path="/insurance/risk-analysis" element={<InsuranceRiskAnalysis />} />
+          <Route path="/insurance/combined-ratio" element={<InsuranceCombinedRatio />} />
           <Route path="/insurance/loss-ratio-details" element={<InsurancePlaceholder title="Loss Ratio - Détails" />} />
           <Route path="/insurance/solvency-module" element={<InsurancePlaceholder title="Module Solvency II" />} />
           <Route path="/insurance/actuarial-analysis" element={<ActuarialAnalytics />} />
           <Route path="/insurance/claims-management" element={<ClaimsUnderwriting />} />
+          
+          {/* MODIFICATION CLÉ : Route mise à jour avec le nouveau chemin */}
+          <Route path="/actuarial-analytics" element={<ActuarialDashboard />} />
+          
+          {/* AJOUT DE LA ROUTE POUR ACTUARIAL PROVISIONING */}
+          <Route path="/actuarial/provisioning" element={<ActuarialProvisioning />} />
+          
+          {/* AJOUT DE LA NOUVELLE ROUTE POUR CLAIMS UNDERWRITING DASHBOARD */}
+          <Route path="/claims-underwriting" element={<ClaimsUnderwritingDashboard />} />
+          
+          {/* AJOUT DE LA ROUTE POUR CLAIMS MANAGEMENT */}
+          <Route path="/claims/management" element={<ClaimsManagement />} />
           
           {/* Routes Analytics & IA */}
           <Route path="/analytics" element={<Analyses />} />
